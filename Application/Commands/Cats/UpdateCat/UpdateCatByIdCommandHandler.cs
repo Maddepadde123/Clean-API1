@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Commands.Cats.UpdateCat
 {
-    internal class UpdateCatByIdCommandHandler : IRequestHandler<UpdateCatByIdCommand, Cat>
+    public class UpdateCatByIdCommandHandler : IRequestHandler<UpdateCatByIdCommand, Cat>
     {
         private readonly MockDatabase _mockDatabase;
 

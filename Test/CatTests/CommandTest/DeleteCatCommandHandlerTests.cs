@@ -1,12 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Commands.Cats.DeleteDog;
+using Application.Dtos;
+using Domain.Models;
+using Infrastructure.Database;
 
-namespace Test.CatTests.CommandTest
+namespace Application.Tests.Commands.Cats
 {
-    internal class DeleteCatCommandHandlerTests
+    [TestFixture]
+    public class DeleteCatByIdCommandHandlerTests
     {
+        private DeleteCatByIdCommandHandler _handler;
+        private MockDatabase _mockDatabase;
+
+        [SetUp]
+        public void Setup()
+        {
+            _mockDatabase = new MockDatabase();
+            _handler = new DeleteCatByIdCommandHandler(_mockDatabase);
+        }
+
+        [Test]
+        public async Task Handle_DeletesCatInDatabase()
+        {
+            // Arrange
+            var initialCat = new Cat { Id = Guid.NewGuid(), Name = "InitialCatName" };
+            _mockDatabase.Cats.Add(initialCat);
+
+            // Create an instance of DeleteDogByIdCommand
+            var command = new DeleteCatByIdCommand(
+                deletedCat: new CatDto { Name = "InitialCatName" },
+                deletedCatId: initialCat.Id
+            );
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.IsTrue(result);
+
+            // Check that the dog has been deleted from MockDatabase
+            var deletedCatInDatabase = _mockDatabase.Cats.FirstOrDefault(cat => cat.Id == command.DeletedCatId);
+            Assert.IsNull(deletedCatInDatabase);
+        }
     }
 }
