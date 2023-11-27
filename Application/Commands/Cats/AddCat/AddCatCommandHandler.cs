@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.Commands.Cats
 {
-    internal sealed class AddCatCommandHandler : IRequestHandler<AddCatCommand, Cat>
+    public class AddCatCommandHandler : IRequestHandler<AddCatCommand, Cat>
     {
         private readonly MockDatabase _mockDatabase;
 

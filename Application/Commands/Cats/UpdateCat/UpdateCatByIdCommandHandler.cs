@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Commands.Cats.UpdateCat
 {
-    internal class UpdateCatByIdCommandHandler : IRequestHandler<UpdateCatByIdCommand, Cat>
+    public class UpdateCatByIdCommandHandler : IRequestHandler<UpdateCatByIdCommand, Cat>
     {
         private readonly MockDatabase _mockDatabase;
 
@@ -17,6 +17,7 @@ namespace Application.Commands.Cats.UpdateCat
             Cat catToUpdate = _mockDatabase.Cats.FirstOrDefault(cat => cat.Id == request.Id)!;
 
             catToUpdate.Name = request.UpdatedCat.Name;
+            catToUpdate.LikesToPlay = request.UpdatedCat.LikesToPlay;
 
             return Task.FromResult(catToUpdate);
         }
