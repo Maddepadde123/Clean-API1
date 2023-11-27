@@ -4,7 +4,7 @@ using Infrastructure.Database;
 namespace Test.DogTests.QueryTest
 {
     [TestFixture]
-    public class GetDogByIdTests
+    public class GetDogByIdQueryHandlerTests
     {
         private GetDogByIdQueryHandler _handler;
         private MockDatabase _mockDatabase;
