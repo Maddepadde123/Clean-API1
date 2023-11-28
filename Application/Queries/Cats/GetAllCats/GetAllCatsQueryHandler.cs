@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.Queries.Cats
 {
-    internal sealed class GetAllCatsQueryHandler : IRequestHandler<GetAllCatsQuery, List<Cat>>
+    public class GetAllCatsQueryHandler : IRequestHandler<GetAllCatsQuery, List<Cat>>
     {
         private readonly MockDatabase _mockDatabase;
 
