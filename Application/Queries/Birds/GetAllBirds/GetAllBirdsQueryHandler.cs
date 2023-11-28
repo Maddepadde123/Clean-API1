@@ -3,9 +3,9 @@ using Domain.Models;
 using Infrastructure.Database;
 using MediatR;
 
-namespace Application.Queries.Dogs
+namespace Application.Queries.Birds
 {
-    internal sealed class GetAllBirdsQueryHandler : IRequestHandler<GetAllBirdsQuery, List<Bird>>
+    public class GetAllBirdsQueryHandler : IRequestHandler<GetAllBirdsQuery, List<Bird>>
     {
         private readonly MockDatabase _mockDatabase;
 
