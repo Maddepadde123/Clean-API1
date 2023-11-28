@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.Commands.Birds
 {
-    internal sealed class AddBirdCommandHandler : IRequestHandler<AddBirdCommand, Bird>
+    public class AddBirdCommandHandler : IRequestHandler<AddBirdCommand, Bird>
     {
         private readonly MockDatabase _mockDatabase;
 
