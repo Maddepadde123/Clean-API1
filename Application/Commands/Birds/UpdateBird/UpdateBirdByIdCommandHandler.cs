@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Commands.Birds.UpdateBird
 {
-    internal class UpdateBirdByIdCommandHandler : IRequestHandler<UpdateBirdByIdCommand, Bird>
+    public class UpdateBirdByIdCommandHandler : IRequestHandler<UpdateBirdByIdCommand, Bird>
     {
         private readonly MockDatabase _mockDatabase;
 
@@ -16,7 +16,8 @@ namespace Application.Commands.Birds.UpdateBird
         {
             Bird birdToUpdate = _mockDatabase.Birds.FirstOrDefault(bird => bird.Id == request.Id)!;
 
-            birdToUpdate.Name = request.UpdatedBird.Name;
+            birdToUpdate.Name = request.UpdatedBird.Name; 
+            birdToUpdate.CanFly = request.UpdatedBird.CanFly; 
 
             return Task.FromResult(birdToUpdate);
         }
