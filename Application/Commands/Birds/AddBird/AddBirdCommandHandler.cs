@@ -19,7 +19,8 @@ namespace Application.Commands.Birds
             Bird birdToCreate = new()
             {
                 Id = Guid.NewGuid(),
-                Name = request.NewBird.Name
+                Name = request.NewBird.Name,
+                CanFly = request.NewBird.CanFly
             };
 
             _mockDatabase.Birds.Add(birdToCreate);
