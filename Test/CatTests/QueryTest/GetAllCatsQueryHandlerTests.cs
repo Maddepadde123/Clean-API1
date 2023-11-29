@@ -6,7 +6,7 @@ using Infrastructure.Database;
 namespace Test.CatTests.QueryTest
 {
     [TestFixture]
-    public class GetAllDogsTests
+    public class GetAllBirdsTests
     {
         private GetAllCatsQueryHandler _handler;
         private MockDatabase _mockDatabase;

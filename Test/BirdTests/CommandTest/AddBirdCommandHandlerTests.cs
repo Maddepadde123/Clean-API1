@@ -30,10 +30,10 @@ namespace Application.Tests.Commands.Birds
             Assert.NotNull(result);
             Assert.IsInstanceOf<Bird>(result);
 
-            // Kontrollera att hunden har fått ett giltigt ID
+            // Kontrollera att fågeln har fått ett giltigt ID
             Assert.That(result.Id, Is.Not.EqualTo(Guid.Empty));
 
-            // Kontrollera att hunden har rätt namn enligt det som skickades med kommandot
+            // Kontrollera att fågeln har rätt namn enligt det som skickades med kommandot
             Assert.That(result.Name, Is.EqualTo("NewBirdName"));
         }
     }

@@ -25,7 +25,7 @@ namespace Application.Tests.Commands.Cats
             var initialCat = new Cat { Id = Guid.NewGuid(), Name = "InitialCatName", LikesToPlay = true };
             _mockDatabase.Cats.Add(initialCat);
 
-            // Create an instance of UpdateDogByIdCommand
+            // Create an instance of UpdateCatByIdCommand
             var command = new UpdateCatByIdCommand(
                 updatedCat: new CatDto { Name = "UpdatedCatName", LikesToPlay = false },
                 id: initialCat.Id
@@ -38,10 +38,10 @@ namespace Application.Tests.Commands.Cats
             Assert.NotNull(result);
             Assert.IsInstanceOf<Cat>(result);
 
-            // Check that the dog has the correct updated name
+            // Check that the cat has the correct updated name
             Assert.That(result.Name, Is.EqualTo("UpdatedCatName"));
 
-            // Check that the dog has been updated in MockDatabase
+            // Check that the cat has been updated in MockDatabase
             var updatedCatInDatabase = _mockDatabase.Cats.FirstOrDefault(cat => cat.Id == command.Id);
             Assert.That(updatedCatInDatabase, Is.Not.Null);
             Assert.That(updatedCatInDatabase.Name, Is.EqualTo("UpdatedCatName"));
