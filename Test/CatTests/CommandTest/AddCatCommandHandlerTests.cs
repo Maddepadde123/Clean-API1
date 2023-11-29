@@ -30,10 +30,10 @@ namespace Application.Tests.Commands.Cats
             Assert.NotNull(result);
             Assert.IsInstanceOf<Cat>(result);
 
-            // Kontrollera att hunden har fått ett giltigt ID
+            // Kontrollera att katten har fått ett giltigt ID
             Assert.That(result.Id, Is.Not.EqualTo(Guid.Empty));
 
-            // Kontrollera att hunden har rätt namn enligt det som skickades med kommandot
+            // Kontrollera att katten har rätt namn enligt det som skickades med kommandot
             Assert.That(result.Name, Is.EqualTo("NewCatName"));
         }
     }

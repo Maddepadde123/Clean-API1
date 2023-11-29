@@ -37,7 +37,7 @@ namespace Application.Tests.Commands.Birds
             // Assert
             Assert.IsTrue(result);
 
-            // Check that the dog has been deleted from MockDatabase
+            //Kontrollera att fågeln har blivit raderad från databas
             var deletedBirdInDatabase = _mockDatabase.Birds.FirstOrDefault(bird => bird.Id == command.DeletedBirdId);
             Assert.IsNull(deletedBirdInDatabase);
         }

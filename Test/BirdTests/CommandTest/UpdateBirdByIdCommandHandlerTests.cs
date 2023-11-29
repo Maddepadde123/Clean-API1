@@ -38,10 +38,10 @@ namespace Application.Tests.Commands.Birds
             Assert.NotNull(result);
             Assert.IsInstanceOf<Bird>(result);
 
-            // Check that the dog has the correct updated name
+            // Check that the bird has the correct updated name
             Assert.That(result.Name, Is.EqualTo("UpdatedBirdName"));
 
-            // Check that the dog has been updated in MockDatabase
+            // Check that the bird has been updated in MockDatabase
             var updatedBirdInDatabase = _mockDatabase.Birds.FirstOrDefault(bird => bird.Id == command.Id);
             Assert.That(updatedBirdInDatabase, Is.Not.Null);
             Assert.That(updatedBirdInDatabase.Name, Is.EqualTo("UpdatedBirdName"));
