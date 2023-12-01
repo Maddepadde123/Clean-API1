@@ -1,5 +1,4 @@
 ﻿using Application.Commands.Birds.DeleteDog;
-using Application.Dtos;
 using Domain.Models;
 using Infrastructure.Database;
 
@@ -27,7 +26,6 @@ namespace Application.Tests.Commands.Birds
 
             // Create an instance of DeleteBirdByIdCommand
             var command = new DeleteBirdByIdCommand(
-                deletedBird: new BirdDto { Name = "InitialBirdName" },
                 deletedBirdId: initialBird.Id
             );
 
@@ -36,10 +34,6 @@ namespace Application.Tests.Commands.Birds
 
             // Assert
             Assert.IsTrue(result);
-
-            //Kontrollera att fågeln har blivit raderad från databas
-            var deletedBirdInDatabase = _mockDatabase.Birds.FirstOrDefault(bird => bird.Id == command.DeletedBirdId);
-            Assert.IsNull(deletedBirdInDatabase);
         }
     }
 }

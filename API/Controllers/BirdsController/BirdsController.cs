@@ -24,7 +24,7 @@ namespace API.Controllers.BirdsController
         // Get all birds from database
         [HttpGet]
         [Route("getAllBirds")]
-        public async Task<IActionResult> GetAllBirds() //Metod för att presentera resultatet av getAllBirds. Metoden
+        public async Task<IActionResult> GetAllBirds() //Metod för att presentera resultatet av getAllBirds. 
         {
             return Ok(await _mediator.Send(new GetAllBirdsQuery()));
             //return Ok("GET ALL BIRDS");
@@ -60,9 +60,9 @@ namespace API.Controllers.BirdsController
         [Route("deleteBird/{deletedBirdId}")] //URL-koden som syns på swagger.
 
         //Metoden som utför själva Httpförfrågan och Task<IActionResult> innebär att den utför en delete operation som retunerar en Http-respons. MediatR används för att utföra kommandot och skapar en HTTP-200 respons om borttagningen lyckades.
-        public async Task<IActionResult> DeleteBird([FromBody] BirdDto deletedBird, Guid deletedBirdId)
+        public async Task<IActionResult> DeleteBird(Guid deletedBirdId)
         {
-            return Ok(await _mediator.Send(new DeleteBirdByIdCommand(deletedBird, deletedBirdId)));
+            return Ok(await _mediator.Send(new DeleteBirdByIdCommand(deletedBirdId)));
         }
 
     }
