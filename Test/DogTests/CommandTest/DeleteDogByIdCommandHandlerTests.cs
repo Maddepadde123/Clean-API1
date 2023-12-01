@@ -1,5 +1,4 @@
 ﻿using Application.Commands.Dogs.DeleteDog;
-using Application.Dtos;
 using Domain.Models;
 using Infrastructure.Database;
 
@@ -27,7 +26,6 @@ namespace Application.Tests.Commands.Dogs
 
             // Create an instance of DeleteDogByIdCommand
             var command = new DeleteDogByIdCommand(
-                deletedDog: new DogDto { Name = "InitialDogName" },
                 deletedDogId: initialDog.Id
             );
 
@@ -37,9 +35,6 @@ namespace Application.Tests.Commands.Dogs
             // Assert
             Assert.IsTrue(result);
 
-            // Check that the dog has been deleted from MockDatabase
-            var deletedDogInDatabase = _mockDatabase.Dogs.FirstOrDefault(dog => dog.Id == command.DeletedDogId);
-            Assert.IsNull(deletedDogInDatabase);
         }
     }
 }

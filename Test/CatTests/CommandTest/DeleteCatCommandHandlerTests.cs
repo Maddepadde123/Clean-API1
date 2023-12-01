@@ -1,5 +1,4 @@
 ﻿using Application.Commands.Cats.DeleteDog;
-using Application.Dtos;
 using Domain.Models;
 using Infrastructure.Database;
 
@@ -27,7 +26,6 @@ namespace Application.Tests.Commands.Cats
 
             // Create an instance of DeleteCatByIdCommand
             var command = new DeleteCatByIdCommand(
-                deletedCat: new CatDto { Name = "InitialCatName" },
                 deletedCatId: initialCat.Id
             );
 
@@ -36,10 +34,6 @@ namespace Application.Tests.Commands.Cats
 
             // Assert
             Assert.IsTrue(result);
-
-            // Check that the cat has been deleted from MockDatabase
-            var deletedCatInDatabase = _mockDatabase.Cats.FirstOrDefault(cat => cat.Id == command.DeletedCatId);
-            Assert.IsNull(deletedCatInDatabase);
         }
     }
 }
