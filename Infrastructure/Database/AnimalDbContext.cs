@@ -2,17 +2,20 @@
 using Domain.Models;
 using Microsoft.Extensions.Configuration;
 using Domain.Models.Animal;
+using Domain.Models.User;
 
 namespace Domain.Data
 {
     public class AnimalDbContext : DbContext
     {
-        public DbSet<AnimalModel> animalModels { get; set; }
+        public DbSet<AnimalModel> AnimalModels { get; set; }
         public DbSet<Bird> Birds { get; set; }
 
         public DbSet<Dog> Dogs { get; set; }
 
         public DbSet<Cat> Cats { get; set; }
+
+        public DbSet<UserModel> UserModel { get; set; }
 
 
 

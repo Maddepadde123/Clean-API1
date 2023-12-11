@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using Domain.Models.User;
 
 namespace Infrastructure.Database
 {
@@ -46,6 +47,18 @@ namespace Infrastructure.Database
             new Bird { Id = Guid.NewGuid(), Name = "Alex", CanFly = false},
             new Bird { Id = Guid.NewGuid(), Name = "Carola", CanFly= false},
             new Bird { Id = new Guid("59d8fc74-3c94-4ed8-9a38-36b0b6b1074a"), Name = "TestBirdForUnitTests"}
+        };
+        public List<UserModel> Users
+        {
+            get { return allUsers; }
+            set { allUsers = value; }
+        }
+
+        private static List<UserModel> allUsers = new()
+        {
+            new UserModel { Id = Guid.NewGuid(), UserName = "Nils" },
+            new UserModel { Id = Guid.NewGuid(), UserName = "Kalle" },
+
         };
     }
 }
