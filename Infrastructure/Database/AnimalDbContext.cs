@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Domain.Models;
-using Microsoft.Extensions.Configuration;
+﻿using Domain.Models;
 using Domain.Models.Animal;
+using Domain.Models.AnimalUser;
 using Domain.Models.User;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Domain.Data
 {
@@ -16,6 +17,8 @@ namespace Domain.Data
         public DbSet<Cat> Cats { get; set; }
 
         public DbSet<UserModel> UserModel { get; set; }
+
+        public DbSet<AnimalUserModel> AnimalUserModels { get; set; }
 
 
 

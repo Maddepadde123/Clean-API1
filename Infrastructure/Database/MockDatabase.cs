@@ -56,9 +56,9 @@ namespace Infrastructure.Database
 
         private static List<UserModel> allUsers = new()
         {
-            new UserModel { Id = Guid.NewGuid(), UserName = "Nils" },
-            new UserModel { Id = Guid.NewGuid(), UserName = "Kalle" },
-
+            new UserModel { Id = Guid.NewGuid(), UserName = "Erik" },
+            new UserModel { Id = Guid.NewGuid(), UserName = "Sven" },
+            new UserModel { Id = Guid.NewGuid(), UserName = "Emma" },
         };
     }
 }

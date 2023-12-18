@@ -1,14 +1,18 @@
-﻿using Application.Commands.Users;
+﻿using Application.Commands.Users.AddAnimalUser;
+using Application.Commands.Users.DeleteAnimalUser;
+using Application.Commands.Users.DeleteUser;
+using Application.Commands.Users.RegisterUser;
+using Application.Commands.Users.UpdateAnimalUser;
+using Application.Commands.Users.UpdateUser;
 using Application.Dtos;
+using Application.Queries.Users;
+using Application.Queries.Users.GetAll;
+using Application.Queries.Users.GetAllAnimalUsers;
+using Application.Queries.Users.GetAnimalUserById;
+using Application.Queries.Users.GetById;
 using Domain.Models;
-using Domain.Models.User;
-using Infrastructure.Database;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace API.Controllers
 {
@@ -17,80 +21,103 @@ namespace API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        private readonly MockDatabase _mockDatabase;
-        internal readonly IMediator _mediator;
+        private readonly IMediator _mediator;
 
-        public UserController(IConfiguration configuration, MockDatabase mockDatabase, IMediator mediator)
+        public UserController(IConfiguration configuration, IMediator mediator)
         {
             _configuration = configuration;
-            _mockDatabase = mockDatabase;
             _mediator = mediator;
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginRequests model)
+        public async Task<IActionResult> Login([FromBody] LoginRequests model)
         {
-            var user = AuthenticateUser(model.Username, model.Password);
-
-            if (user == null)
+            var token = await _mediator.Send(new UserLoginQuery
             {
-                return Unauthorized("Invalid username or password");
-            }
-
-            var token = GenerateJwtToken(user);
+                UserName = model.Username,
+                Password = model.Password
+            });
 
             return Ok(new { Token = token });
         }
 
-        [HttpPost]
-        [Route("register")]
+        [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationDto newUser)
         {
             return Ok(await _mediator.Send(new RegisterUserCommand(newUser)));
         }
 
-        private UserModel AuthenticateUser(string username, string password)
+        [HttpGet("GetAllUsers")]
+        public async Task<IActionResult> GetAllUsers()
         {
-            // Replace with your actual authentication logic
-            var user = _mockDatabase.Users.FirstOrDefault(u => u.UserName == username && u.UserPassword == password);
-            return user;
+            return Ok(await _mediator.Send(new GetAllUsersQuery()));
         }
-        private string GenerateJwtToken(UserModel user)
+
+        [HttpGet("GetUserById/{userId}")]
+        public async Task<IActionResult> GetUserById(Guid userId)
+        {
+            return Ok(await _mediator.Send(new GetUserByIdQuery(userId)));
+        }
+
+        [HttpPut("UpdateUserById/{userId}")]
+        public async Task<IActionResult> UpdateUser([FromBody] UserDto updatedUser, Guid userId)
+        {
+            return Ok(await _mediator.Send(new UpdateUserByIdCommand(updatedUser, userId)));
+        }
+
+        [HttpDelete("DeleteUserById/{userId}")]
+        public async Task<IActionResult> DeleteUser(Guid userId)
+        {
+            return Ok(await _mediator.Send(new DeleteUserByIdCommand(userId)));
+        }
+
+        [HttpPost("addNewConnectionAnimalUser")]
+        public async Task<IActionResult> AddAnimalUser([FromBody] AnimalUserDto newAnimalUser)
         {
             try
             {
-                var key = Encoding.ASCII.GetBytes(_configuration["JwtSettings:SecretKey"]);
+                var result = await _mediator.Send(new AddAnimalUserCommand(newAnimalUser));
 
-                var tokenDescriptor = new SecurityTokenDescriptor
+                if (result != null)
                 {
-                    Subject = new ClaimsIdentity(new[]
-                    {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            }),
-                    Expires = DateTime.UtcNow.AddHours(1),
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-                };
-
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-
-                if (token != null)
-                {
-                    return tokenHandler.WriteToken(token);
+                    return Ok(result);
                 }
                 else
                 {
-                    // Handle case where token creation failed
-                    return "Token creation failed.";
+                    return BadRequest("Failed to create the Animal-User connection.");
                 }
             }
             catch (Exception ex)
             {
-                // Handle exception (log it, throw it further, etc.)
-                return $"Token generation failed. Exception: {ex.Message}";
+                // Logga och hantera fel här
+                return StatusCode(500, "Internal server error");
             }
         }
 
+        [HttpGet("GetAllAnimalUsers")]
+        public async Task<IActionResult> GetAllAnimalUsers()
+        {
+            return Ok(await _mediator.Send(new GetAllAnimalUsersQuery()));
+        }
+
+        [HttpGet("GetAnimalUserById/{userId}/{animalId}")]
+        public async Task<IActionResult> GetAnimalUserById(Guid userId, Guid animalId)
+        {
+            return Ok(await _mediator.Send(new GetAnimalUserByIdQuery(userId, animalId)));
+        }
+
+        [HttpPut("UpdateAnimalUserById/{userId}/{animalId}")]
+        public async Task<IActionResult> UpdateAnimalUser([FromBody] AnimalUserDto updatedAnimalUser, Guid userId, Guid animalId)
+        {
+            return Ok(await _mediator.Send(new UpdateAnimalUserByIdCommand(updatedAnimalUser, userId, animalId)));
+        }
+
+        [HttpDelete("DeleteAnimalUserById/{userId}/{animalId}")]
+        public async Task<IActionResult> DeleteAnimalUser(Guid userId, Guid animalId)
+        {
+            return Ok(await _mediator.Send(new DeleteAnimalUserByIdCommand(userId, animalId)));
+        }
     }
+
 }
+

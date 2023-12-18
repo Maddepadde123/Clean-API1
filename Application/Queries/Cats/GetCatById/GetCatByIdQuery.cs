@@ -11,5 +11,6 @@ namespace Application.Queries.Cats.GetById
         }
 
         public Guid Id { get; }
+        public Guid CatId { get; internal set; }
     }
 }

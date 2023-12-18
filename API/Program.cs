@@ -1,47 +1,47 @@
-using Application;
-using Infrastructure;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using System.Text;
+using Infrastructure;  // Importera nödvändig namespace för Infrastructure-projektet
+using Microsoft.AspNetCore.Authentication.JwtBearer;  // Importera nödvändig namespace för JWT-baserad autentisering
+using Microsoft.IdentityModel.Tokens;  // Importera nödvändig namespace för hantering av JWT-token
+using Microsoft.OpenApi.Models;  // Importera nödvändig namespace för Swagger/OpenAPI
+using System.Text;  // Importera nödvändig namespace för hantering av text och teckenkoder
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);  // Skapa en ny instans av WebApplicationBuilder
 
-ConfigureServices(builder.Services, builder.Configuration);
-ConfigureAuthentication(builder.Services, builder.Configuration);
-ConfigureSwagger(builder.Services);
+ConfigureServices(builder.Services, builder.Configuration);  // Konfigurera tjänster med hjälp av metoden ConfigureServices
+ConfigureAuthentication(builder.Services, builder.Configuration);  // Konfigurera autentisering med hjälp av metoden ConfigureAuthentication
+ConfigureSwagger(builder.Services);  // Konfigurera Swagger med hjälp av metoden ConfigureSwagger
 
-var app = builder.Build();
+var app = builder.Build();  // Bygg en instans av WebApplication
 
-app.UseHttpsRedirection();
-app.UseRouting();
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseHttpsRedirection();  // Omdirigera HTTP-förfrågningar till HTTPS
+app.UseRouting();  // Aktivera routing
+app.UseAuthentication();  // Aktivera autentisering
+app.UseAuthorization();  // Aktivera behörighetshantering
 
-app.MapControllers();
+app.MapControllers();  // Kartlägg kontroller för hantering av HTTP-förfrågningar
 
-app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwagger();  // Aktivera Swagger
+app.UseSwaggerUI();  // Aktivera Swagger UI
 
-app.Run();
+app.Run();  // Starta applikationen
+
 
 // Metoder för att strukturera konfigurationer
 void ConfigureServices(IServiceCollection services, IConfiguration configuration)
 {
-    services.AddControllers();
-    services.AddApplication().AddInfrastructure();
-    services.AddEndpointsApiExplorer();
+    services.AddControllers();  // Lägg till tjänster för MVC-controllers
+    services.AddApplication().AddInfrastructure();  // Lägg till applikationens och infrastrukturens tjänster
+    services.AddEndpointsApiExplorer();  // Lägg till tjänster för API Explorer
 }
 
 void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration)
 {
-    var jwtSettings = configuration.GetSection("JwtSettings");
-    var secretKey = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]);
+    var jwtSettings = configuration.GetSection("JwtSettings");  // Hämta JWT-konfigurationsinställningar från appsettings.json
+    var secretKey = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]);  // Konvertera hemligt nyckel-strängen till byte-array
 
-    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)  // Konfigurera autentisering med JWT-bärare
         .AddJwtBearer(options =>
         {
-            options.TokenValidationParameters = new TokenValidationParameters
+            options.TokenValidationParameters = new TokenValidationParameters  // Konfigurera JWT-tokenvalideringsparametrar
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(secretKey),
@@ -54,17 +54,19 @@ void ConfigureAuthentication(IServiceCollection services, IConfiguration configu
 
 void ConfigureSwagger(IServiceCollection services)
 {
-    services.AddSwaggerGen(c =>
+    services.AddSwaggerGen(c =>  // Konfigurera Swagger-generering
     {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "Clean-Api", Version = "v1" });
-        // Include the security scheme for JWT
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "Clean-Api", Version = "v1" });  // Ange API-dokumentinformation
+
+        // Lägg till säkerhetsschemat för JWT
         c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
             Description = "JWT Authorization header using the Bearer scheme",
             Type = SecuritySchemeType.Http,
             Scheme = "bearer"
         });
-        // Add a global security requirement for JWT
+
+        // Lägg till globalt säkerhetskrav för JWT
         c.AddSecurityRequirement(new OpenApiSecurityRequirement
         {
             {

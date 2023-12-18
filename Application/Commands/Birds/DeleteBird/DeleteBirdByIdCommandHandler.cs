@@ -1,28 +1,33 @@
-﻿using Domain.Models;
-using Infrastructure.Database;
-using MediatR;
+﻿// Använder nödvändiga namnrymder och importerar klasser som behövs för koden
+using Infrastructure.Interfaces;  // Importerar namnrymden för gränssnittet för Animal Repository
+using MediatR;                    // Importerar namnrymden för MediatR för att stödja Mediator pattern
 
+// Placerar koden i namnrymden "Application.Commands.Birds.DeleteDog"
 namespace Application.Commands.Birds.DeleteDog
 {
+    // Skapar en klass "DeleteBirdByIdCommandHandler" som implementerar IRequestHandler<TRequest, TResponse>
+    // där TRequest är typen av förfrågan och TResponse är typen av svar från hanteraren
     public class DeleteBirdByIdCommandHandler : IRequestHandler<DeleteBirdByIdCommand, bool>
     {
-        private readonly MockDatabase _mockDatabase;
-        public DeleteBirdByIdCommandHandler(MockDatabase mockDatabase)
+        // Privat fält för att hålla en referens till Animal Repository-gränssnittet
+        private readonly IAnimalRepository _animalRepository;
+
+        // Konstruktor för att skapa en instans av DeleteBirdByIdCommandHandler med ett Animal Repository-gränssnitt
+        public DeleteBirdByIdCommandHandler(IAnimalRepository animalRepository)
         {
-            _mockDatabase = mockDatabase;
+            // Tilldelar det inkommande Animal Repository-gränssnittet till det privata fältet
+            _animalRepository = animalRepository;
         }
 
-        public Task<bool> Handle(DeleteBirdByIdCommand request, CancellationToken cancellationToken)
+        // Implementerar Handle-metoden för att hantera inkommande DeleteBirdByIdCommand-förfrågan
+        // Den här metoden används för att utföra logiken för att ta bort en fågel baserat på dess ID
+        public async Task<bool> Handle(DeleteBirdByIdCommand request, CancellationToken cancellationToken)
         {
-            Bird birdToDelete = _mockDatabase.Birds.FirstOrDefault(bird => bird.Id == request.DeletedBirdId)!;
+            // Använder Animal Repository-gränssnittet för att ta bort fågeln baserat på det angivna ID
+            await _animalRepository.DeleteBirdById(request.DeletedBirdId);
 
-            if (birdToDelete != null)
-            {
-                _mockDatabase.Birds.Remove(birdToDelete);
-                return Task.FromResult(true);
-            }
-
-            return Task.FromResult(false);
+            // Returnera true som standard, men du kan lägga till logik för att kontrollera om borttagningen var framgångsrik
+            return true;
         }
     }
 }

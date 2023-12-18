@@ -1,22 +1,32 @@
 ﻿using Domain.Models;
-using Infrastructure.Database;
+using Infrastructure.Interfaces;  // Lägg till referensen till ditt Interface
 using MediatR;
 
 namespace Application.Queries.Dogs.GetById
 {
     public class GetDogByIdQueryHandler : IRequestHandler<GetDogByIdQuery, Dog>
     {
-        private readonly MockDatabase _mockDatabase;
+        private readonly IAnimalRepository _animalRepository;
 
-        public GetDogByIdQueryHandler(MockDatabase mockDatabase)
+        public GetDogByIdQueryHandler(IAnimalRepository animalRepository)
         {
-            _mockDatabase = mockDatabase;
+            _animalRepository = animalRepository;
         }
 
-        public Task<Dog> Handle(GetDogByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Dog> Handle(GetDogByIdQuery request, CancellationToken cancellationToken)
         {
-            Dog wantedDog = _mockDatabase.Dogs.FirstOrDefault(dog => dog.Id == request.Id)!;
-            return Task.FromResult(wantedDog);
+            try
+            {
+                // Använd AnimalRepository för att hämta hunden från databasen
+                Dog wantedDog = await _animalRepository.GetDogById(request.Id);
+                return wantedDog;
+            }
+            catch (Exception ex)
+            {
+                // Logga och hantera fel här
+                throw;
+            }
         }
     }
 }
+
