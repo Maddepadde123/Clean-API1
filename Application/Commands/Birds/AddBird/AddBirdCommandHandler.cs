@@ -1,9 +1,7 @@
 ﻿// Använder nödvändiga namnrymder och importerar klasser som behövs för koden
-using MediatR;                   // Importerar namnrymden för MediatR för att stödja Mediator pattern
-using System.Threading;          // Importerar namnrymden för trådhanttering
-using System.Threading.Tasks;    // Importerar namnrymden för asynkrona uppgifter
 using Domain.Models;              // Importerar namnrymden för domänmodeller
 using Infrastructure.Interfaces;  // Importerar namnrymden för gränssnittet för Animal Repository
+using MediatR;                   // Importerar namnrymden för MediatR för att stödja Mediator pattern
 
 // Placerar koden i namnrymden "Application.Commands.Birds"
 namespace Application.Commands.Birds

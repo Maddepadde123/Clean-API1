@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.Queries.Users;
+﻿using Application.Queries.Users;
 using Infrastructure.Authentication;
-using Infrastructure.Interfaces;
 using MediatR;
 
 namespace Application.Handlers.Users

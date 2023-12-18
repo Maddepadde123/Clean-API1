@@ -1,7 +1,5 @@
 ﻿using Domain.Models.Animal;
 using Domain.Models.User;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Models.AnimalUser

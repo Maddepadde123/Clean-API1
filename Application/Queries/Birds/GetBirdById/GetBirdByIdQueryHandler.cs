@@ -1,8 +1,6 @@
 ﻿using Domain.Models;
 using Infrastructure.Interfaces;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Queries.Birds.GetById
 {

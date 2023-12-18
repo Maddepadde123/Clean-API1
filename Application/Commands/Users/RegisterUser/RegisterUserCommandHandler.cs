@@ -1,9 +1,6 @@
-﻿using MediatR;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Domain.Models.User;
+﻿using Domain.Models.User;
 using Infrastructure.Interfaces;
+using MediatR;
 
 namespace Application.Commands.Users.RegisterUser
 {

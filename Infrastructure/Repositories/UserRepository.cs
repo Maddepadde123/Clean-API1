@@ -3,9 +3,6 @@ using Domain.Data;
 using Domain.Models.User;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {

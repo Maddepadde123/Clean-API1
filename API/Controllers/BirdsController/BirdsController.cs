@@ -5,7 +5,6 @@ using Application.Dtos;  // Importera nödvändig namespace för Data Transfer O
 using Application.Queries.Birds.GetAll;  // Importera nödvändig namespace för Bird-relaterade frågor för att hämta alla
 using Application.Queries.Birds.GetById;  // Importera nödvändig namespace för Bird-relaterade frågor för att hämta efter ID
 using MediatR;  // Importera nödvändig namespace för MediatR, en medlingsbibliotek för att hantera kommandon och frågor
-using Microsoft.AspNetCore.Authorization;  // Importera nödvändig namespace för Authorization-funktionalitet
 using Microsoft.AspNetCore.Mvc;  // Importera nödvändig namespace för ASP.NET Core MVC-funktionalitet
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860

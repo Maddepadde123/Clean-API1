@@ -2,9 +2,6 @@
 using Domain.Models;              // Importerar namnrymden för domänmodeller
 using Infrastructure.Interfaces;  // Importerar namnrymden för gränssnittet för Animal Repository
 using MediatR;                    // Importerar namnrymden för MediatR för att stödja Mediator pattern
-using System;                     // Importerar namnrymden för grundläggande systemklasser
-using System.Threading;           // Importerar namnrymden för trådhanttering
-using System.Threading.Tasks;     // Importerar namnrymden för asynkrona uppgifter
 
 // Placerar koden i namnrymden "Application.Commands.Cats"
 namespace Application.Commands.Cats

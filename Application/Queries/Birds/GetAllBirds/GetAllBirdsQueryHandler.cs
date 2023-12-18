@@ -1,11 +1,7 @@
 ﻿using Application.Queries.Birds.GetAll;
 using Domain.Models;
 using Infrastructure.Interfaces;
-using Infrastructure.Repositories.AnimalRepository; // Lägg till rätt namespace för ditt repository
 using MediatR;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Queries.Birds
 {

@@ -1,7 +1,6 @@
 ﻿using Application.Dtos;
 using Domain.Models.AnimalUser;
 using MediatR;
-using System;
 
 namespace Application.Commands.Users.UpdateAnimalUser
 {

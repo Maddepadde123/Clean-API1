@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Infrastructure.Interfaces;
+﻿using Application.Queries.Cats.GetAll;
 using Domain.Models;
+using Infrastructure.Interfaces;
 using MediatR;
-using Application.Queries.Cats.GetAll;
 
 namespace Application.Queries.Cats
 {

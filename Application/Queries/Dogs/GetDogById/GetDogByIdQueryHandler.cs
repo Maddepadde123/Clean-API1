@@ -1,8 +1,6 @@
 ﻿using Domain.Models;
 using Infrastructure.Interfaces;  // Lägg till referensen till ditt Interface
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Queries.Dogs.GetById
 {

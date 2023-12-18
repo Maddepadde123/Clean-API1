@@ -1,6 +1,5 @@
 ﻿using Domain.Models.AnimalUser;
 using MediatR;
-using System;
 
 namespace Application.Queries.Users.GetAnimalUserById
 {

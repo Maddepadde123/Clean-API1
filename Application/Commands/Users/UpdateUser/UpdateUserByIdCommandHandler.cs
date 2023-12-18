@@ -1,9 +1,6 @@
 ﻿using Domain.Models.User;
 using Infrastructure.Interfaces;
 using MediatR;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Users.UpdateUser
 {

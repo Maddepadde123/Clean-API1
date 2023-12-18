@@ -1,8 +1,5 @@
 ﻿// IUserRepository.cs
 using Domain.Models.User;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Interfaces
 {
@@ -14,6 +11,6 @@ namespace Infrastructure.Interfaces
         Task DeleteUserById(Guid userId);
         Task UpdateUserById(UserModel updatedUser);
         UserModel GetUserByUsernameAndPassword(string userName, string password);
-        
+
     }
 }

@@ -1,9 +1,7 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Infrastructure.Interfaces;
+﻿using Application.Queries.Cats.GetById;
 using Domain.Models;
+using Infrastructure.Interfaces;
 using MediatR;
-using Application.Queries.Cats.GetById;
 
 namespace Application.Queries.Cats
 {

@@ -5,7 +5,6 @@ using Application.Dtos;  // Importera nödvändig namespace för Data Transfer O
 using Application.Queries.Dogs.GetAll;  // Importera nödvändig namespace för Dog-relaterade frågor för att hämta alla
 using Application.Queries.Dogs.GetById;  // Importera nödvändig namespace för Dog-relaterade frågor för att hämta efter ID
 using MediatR;  // Importera nödvändig namespace för MediatR, en medlingsbibliotek för att hantera kommandon och frågor
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;  // Importera nödvändig namespace för ASP.NET Core MVC-funktionalitet
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -26,7 +25,7 @@ namespace API.Controllers.DogsController
         // Get all dogs from database
         [HttpGet]
         [Route("getAllDogs")]
-        
+
         public async Task<IActionResult> GetAllDogs()
         {
             return Ok(await _mediator.Send(new GetAllDogsQuery()));  // Anropa en MediatR-fråga för att hämta alla hundar och returnera resultatet som en HTTP 200 OK-respons

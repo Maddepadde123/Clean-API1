@@ -1,7 +1,6 @@
 ﻿using Application.Dtos;
 using Domain.Models.User;
 using MediatR;
-using System;
 
 namespace Application.Commands.Users.UpdateUser
 {

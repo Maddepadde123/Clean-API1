@@ -3,10 +3,6 @@ using Domain.Models.AnimalUser;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories.AnimalUserRepository
 {
@@ -102,9 +98,9 @@ namespace Infrastructure.Repositories.AnimalUserRepository
             }
         }
 
-      
 
-       public async Task<AnimalUserModel> AddAnimalUserAsync(AnimalUserModel newAnimalUser)
+
+        public async Task<AnimalUserModel> AddAnimalUserAsync(AnimalUserModel newAnimalUser)
         {
 
             try
@@ -113,14 +109,14 @@ namespace Infrastructure.Repositories.AnimalUserRepository
 
                 await _animalDbContext.SaveChangesAsync();
                 return newAnimalUser;
-                
+
             }
             catch (Exception ex)
             {
                 _logger.LogError("An error occurred while adding a new AnimalUser to the database");
                 throw new Exception("An error occurred while adding a new AnimalUser to the database", ex);
             }
-            
+
 
         }
     }

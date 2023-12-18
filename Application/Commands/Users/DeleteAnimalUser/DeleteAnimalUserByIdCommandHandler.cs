@@ -1,10 +1,7 @@
 ﻿// Använder nödvändiga namnrymder och importerar klasser som behövs för koden
-using MediatR;                             // Importerar namnrymden för MediatR för att stödja Mediator pattern
-using System;                              // Importerar namnrymden för grundläggande systemklasser, inklusive Exception
-using System.Threading;                    // Importerar namnrymden för trådhanttering
-using System.Threading.Tasks;              // Importerar namnrymden för asynkrona uppgifter
 using Domain.Models.AnimalUser;            // Importerar namnrymden för djur-användarmodeller
 using Infrastructure.Interfaces;           // Importerar namnrymden för gränssnittet för djur-användarrepository (IAnimalUserRepository)
+using MediatR;                             // Importerar namnrymden för MediatR för att stödja Mediator pattern
 
 // Placerar koden i namnrymden "Application.Commands.Users.DeleteAnimalUser"
 namespace Application.Commands.Users.DeleteAnimalUser

@@ -1,10 +1,6 @@
-﻿using Application.Queries.Users.GetAnimalUserById;
-using Domain.Models.AnimalUser;
+﻿using Domain.Models.AnimalUser;
 using Infrastructure.Interfaces;
 using MediatR;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Queries.Users.GetAnimalUserById
 {

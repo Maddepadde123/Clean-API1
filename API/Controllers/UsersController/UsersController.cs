@@ -1,5 +1,4 @@
-﻿using Application.Commands.Users;
-using Application.Commands.Users.AddAnimalUser;
+﻿using Application.Commands.Users.AddAnimalUser;
 using Application.Commands.Users.DeleteAnimalUser;
 using Application.Commands.Users.DeleteUser;
 using Application.Commands.Users.RegisterUser;
@@ -12,17 +11,8 @@ using Application.Queries.Users.GetAllAnimalUsers;
 using Application.Queries.Users.GetAnimalUserById;
 using Application.Queries.Users.GetById;
 using Domain.Models;
-using Domain.Models.User;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace API.Controllers
 {

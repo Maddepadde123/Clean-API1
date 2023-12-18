@@ -1,10 +1,6 @@
-﻿using Application.Queries.Users.GetById;
-using Domain.Models.User;
+﻿using Domain.Models.User;
 using Infrastructure.Interfaces;
 using MediatR;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Queries.Users.GetById
 {

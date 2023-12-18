@@ -1,8 +1,4 @@
 ﻿// Använder nödvändiga namnrymder och importerar klasser som behövs för koden
-using System;           // Importerar namnrymden för grundläggande systemklasser, inklusive Guid
-using System.Collections.Generic;   // Importerar namnrymden för generiska kollektioner
-using System.Text;       // Importerar namnrymden för textbehandling
-using System.Threading.Tasks;     // Importerar namnrymden för asynkrona uppgifter
 using MediatR;           // Importerar namnrymden för MediatR för att stödja Mediator pattern
 
 // Placerar koden i namnrymden "Application.Commands.Users.DeleteAnimalUser"

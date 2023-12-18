@@ -1,4 +1,3 @@
-using Application;  // Importera nödvändig namespace för Application-projektet
 using Infrastructure;  // Importera nödvändig namespace för Infrastructure-projektet
 using Microsoft.AspNetCore.Authentication.JwtBearer;  // Importera nödvändig namespace för JWT-baserad autentisering
 using Microsoft.IdentityModel.Tokens;  // Importera nödvändig namespace för hantering av JWT-token

@@ -1,10 +1,6 @@
 ﻿// Använder nödvändiga namnrymder och importerar klasser som behövs för koden
-using Domain.Models;               // Importerar namnrymden för domänmodeller, inklusive Dog-klassen
 using Infrastructure.Interfaces;   // Importerar namnrymden för gränssnittet för Animal Repository (IAnimalRepository)
 using MediatR;                     // Importerar namnrymden för MediatR för att stödja Mediator pattern
-using System;                      // Importerar namnrymden för grundläggande systemklasser
-using System.Threading;            // Importerar namnrymden för trådhanttering
-using System.Threading.Tasks;      // Importerar namnrymden för asynkrona uppgifter
 
 // Placerar koden i namnrymden "Application.Commands.Dogs.DeleteDog"
 namespace Application.Commands.Dogs.DeleteDog

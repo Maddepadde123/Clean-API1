@@ -3,9 +3,6 @@ using Application.Queries.Dogs.GetAll;
 using Domain.Models;
 using Infrastructure.Interfaces;  // Lägg till referensen till ditt Interface
 using MediatR;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Queries.Dogs
 {
