@@ -3,6 +3,7 @@ using Domain.Models;
 using Microsoft.Extensions.Configuration;
 using Domain.Models.Animal;
 using Domain.Models.User;
+using Domain.Models.AnimalUser;
 
 namespace Domain.Data
 {
@@ -17,6 +18,8 @@ namespace Domain.Data
 
         public DbSet<UserModel> UserModel { get; set; }
 
+        public DbSet<AnimalUserModel> AnimalUserModels { get; set; }
+        
 
 
         private readonly IConfiguration _configuration;

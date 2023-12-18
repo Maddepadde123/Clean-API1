@@ -1,18 +1,23 @@
-﻿using FluentValidation;
+﻿using Infrastructure.Interfaces;
+using Infrastructure.Repositories.AnimalRepository;
+using Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
-
-namespace Application
+using FluentValidation;
+using Infrastructure.Repositories.AnimalRepository;
+using Microsoft.Extensions.DependencyInjection;
+ 
+public static class DependencyInjection
 {
-    public static class DependencyInjection
+    public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        public static IServiceCollection AddApplication(this IServiceCollection services)
-        {
-            var assembly = typeof(DependencyInjection).Assembly;
-            services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(assembly));
+        var assembly = typeof(DependencyInjection).Assembly;
 
-            services.AddValidatorsFromAssembly(assembly);
+        services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(assembly));
 
-            return services;
-        }
+        //services.AddValidatorsFromAssembly(assembly);
+
+        return services;
+
     }
+
 }

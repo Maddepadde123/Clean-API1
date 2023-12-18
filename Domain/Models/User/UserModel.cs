@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Models.AnimalUser;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,6 @@ namespace Domain.Models.User
         public Guid Id { get; set; }
         public string UserName { get; set; }
         public string UserPassword { get; set; }
+        public ICollection<AnimalUserModel> AnimalUsers { get; set; } = new List<AnimalUserModel>();
     }
 }

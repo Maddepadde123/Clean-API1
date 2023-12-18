@@ -1,22 +1,36 @@
-﻿using Application.Queries.Cats.GetAll;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Infrastructure.Interfaces;
 using Domain.Models;
-using Infrastructure.Database;
 using MediatR;
+using Application.Queries.Cats.GetAll;
 
 namespace Application.Queries.Cats
 {
     public class GetAllCatsQueryHandler : IRequestHandler<GetAllCatsQuery, List<Cat>>
     {
-        private readonly MockDatabase _mockDatabase;
+        private readonly IAnimalRepository _animalRepository;
 
-        public GetAllCatsQueryHandler(MockDatabase mockDatabase)
+        public GetAllCatsQueryHandler(IAnimalRepository animalRepository)
         {
-            _mockDatabase = mockDatabase;
+            _animalRepository = animalRepository;
         }
-        public Task<List<Cat>> Handle(GetAllCatsQuery request, CancellationToken cancellationToken)
+
+        public async Task<List<Cat>> Handle(GetAllCatsQuery request, CancellationToken cancellationToken)
         {
-            List<Cat> allCatsFromMockDatabase = _mockDatabase.Cats;
-            return Task.FromResult(allCatsFromMockDatabase);
+            try
+            {
+                // Använd GetAllCats-metoden från din AnimalRepository för att hämta alla katter från databasen
+                List<Cat> allCatsFromDatabase = await _animalRepository.GetAllCats();
+                return allCatsFromDatabase;
+            }
+            catch (Exception ex)
+            {
+                // Hantera eventuella fel här, logga eller kasta exception
+                // Du kan också använda en egen Exception-klass om du har en definierad sådan
+                throw new Exception("An error occurred while getting all cats from the database", ex);
+            }
         }
     }
 }
