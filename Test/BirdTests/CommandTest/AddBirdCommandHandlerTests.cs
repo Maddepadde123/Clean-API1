@@ -33,7 +33,8 @@ namespace Application.Tests.Commands.Birds
             Assert.NotNull(result);
             Assert.IsInstanceOf<Bird>(result);
             Assert.That(result.Id, Is.Not.EqualTo(Guid.Empty));
-            Assert.AreEqual(newBird.Name, result.Name);
+            Assert.That(result.Name, Is.EqualTo(newBird.Name));
         }
+
     }
 }
