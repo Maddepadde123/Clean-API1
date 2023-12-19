@@ -1,13 +1,18 @@
-﻿using Application.Commands.Cats;  // Importera nödvändig namespace för Cat-relaterade kommandon
-using Application.Commands.Cats.DeleteDog;  // Importera nödvändig namespace för Cat-relaterade kommandon för att radera (Notera: Det kan vara en felaktig import. Kanske borde vara Application.Commands.Cats.DeleteCat)
-using Application.Commands.Cats.UpdateCat;  // Importera nödvändig namespace för Cat-relaterade kommandon för att uppdatera
-using Application.Dtos;  // Importera nödvändig namespace för Data Transfer Objects (DTOs)
-using Application.Queries.Cats.GetAll;  // Importera nödvändig namespace för Cat-relaterade frågor för att hämta alla
-using Application.Queries.Cats.GetById;  // Importera nödvändig namespace för Cat-relaterade frågor för att hämta efter ID
-using MediatR;  // Importera nödvändig namespace för MediatR, en medlingsbibliotek för att hantera kommandon och frågor
-using Microsoft.AspNetCore.Mvc;  // Importera nödvändig namespace för ASP.NET Core MVC-funktionalitet
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+﻿using Application.Commands.Cats;
+using Application.Commands.Cats.DeleteDog;
+using Application.Commands.Cats.UpdateCat;
+using Application.Dtos;
+using Application.Queries.Cats.GetAll;
+using Application.Queries.Cats.GetById;
+using Application.Validators;
+using FluentValidation.Results;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace API.Controllers.CatsController
 {
@@ -15,54 +20,106 @@ namespace API.Controllers.CatsController
     [ApiController]
     public class CatsController : ControllerBase
     {
-        internal readonly IMediator _mediator;  // Deklarera ett internt fält för att lagra en instans av IMediator
+        internal readonly IMediator _mediator;
+        private readonly ILogger<CatsController> _logger;
 
-        public CatsController(IMediator mediator)  // Konstruktorn som tar emot en instans av IMediator som en parameter och används för att injecta en instans av IMediator när instansen av CatsController skapas.
+        public CatsController(IMediator mediator, ILogger<CatsController> logger)
         {
-            _mediator = mediator;  // Tilldela den injicerade IMediator-instanse till det interna fältet
+            _mediator = mediator;
+            _logger = logger;
         }
 
-        // Get all cats from database
         [HttpGet]
         [Route("getAllCats")]
         public async Task<IActionResult> GetAllCats()
         {
-            return Ok(await _mediator.Send(new GetAllCatsQuery()));  // Anropa en MediatR-fråga för att hämta alla katter och returnera resultatet som en HTTP 200 OK-respons
-            //return Ok("GET ALL DOGS");
+            try
+            {
+                var cats = await _mediator.Send(new GetAllCatsQuery());
+                var sortedCats = cats.OrderByDescending(c => c.Name).ToList();
+                return Ok(sortedCats);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetAllCats: {ex.Message}");
+                return StatusCode(500, "Internal Server Error");
+            }
         }
 
-        // Get a cat by Id
         [HttpGet]
         [Route("getCatById/{catId}")]
         public async Task<IActionResult> GetCatById(Guid catId)
         {
-            return Ok(await _mediator.Send(new GetCatByIdQuery(catId)));  // Anropa en MediatR-fråga för att hämta en katt efter ID och returnera resultatet som en HTTP 200 OK-respons
+            try
+            {
+                return Ok(await _mediator.Send(new GetCatByIdQuery(catId)));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetCatById: {ex.Message}");
+                return StatusCode(500, "Internal Server Error");
+            }
         }
 
-        // Create a new cat 
         [HttpPost]
         [Route("addNewCat")]
         public async Task<IActionResult> AddCat([FromBody] CatDto newCat)
         {
-            return Ok(await _mediator.Send(new AddCatCommand(newCat)));  // Anropa en MediatR-kommando för att lägga till en ny katt och returnera resultatet som en HTTP 200 OK-respons
+            try
+            {
+                var validator = new CatValidator();
+                ValidationResult validationResult = await validator.ValidateAsync(newCat);
+
+                if (!validationResult.IsValid)
+                {
+                    return BadRequest(validationResult.Errors.Select(error => error.ErrorMessage));
+                }
+
+                return Ok(await _mediator.Send(new AddCatCommand(newCat)));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in AddCat: {ex.Message}");
+                return StatusCode(500, "Internal Server Error");
+            }
         }
 
-        // Update a specific Cat
         [HttpPut]
         [Route("updateCat/{updatedCatId}")]
         public async Task<IActionResult> UpdateCat([FromBody] CatDto updatedCat, Guid updatedCatId)
         {
-            return Ok(await _mediator.Send(new UpdateCatByIdCommand(updatedCat, updatedCatId)));  // Anropa en MediatR-kommando för att uppdatera en katt och returnera resultatet som en HTTP 200 OK-respons
-        }
+            try
+            {
+                var validator = new CatValidator();
+                ValidationResult validationResult = await validator.ValidateAsync(updatedCat);
 
-        // IMPLEMENT DELETE !!!
+                if (!validationResult.IsValid)
+                {
+                    return BadRequest(validationResult.Errors.Select(error => error.ErrorMessage));
+                }
+
+                return Ok(await _mediator.Send(new UpdateCatByIdCommand(updatedCat, updatedCatId)));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in UpdateCat: {ex.Message}");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
 
         [HttpDelete]
         [Route("deleteCat/{deletedCatId}")]
         public async Task<IActionResult> DeleteCat(Guid deletedCatId)
         {
-            return Ok(await _mediator.Send(new DeleteCatByIdCommand(deletedCatId)));  // Anropa en MediatR-kommando för att ta bort en katt och returnera resultatet som en HTTP 200 OK-respons
+            try
+            {
+                return Ok(await _mediator.Send(new DeleteCatByIdCommand(deletedCatId)));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in DeleteCat: {ex.Message}");
+                return StatusCode(500, "Internal Server Error");
+            }
         }
-
     }
 }

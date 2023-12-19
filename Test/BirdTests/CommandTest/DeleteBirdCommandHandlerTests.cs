@@ -1,39 +1,49 @@
-﻿//using Application.Commands.Birds.DeleteDog;
-//using Domain.Models;
-//using Infrastructure.Database;
+﻿using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Application.Commands.Birds.DeleteDog;
+using Domain.Models;
+using Infrastructure.Interfaces;
+using Moq;
+using NUnit.Framework;
 
-//namespace Application.Tests.Commands.Birds
-//{
-//    [TestFixture]
-//    public class DeleteBirdByIdCommandHandlerTests
-//    {
-//        private DeleteBirdByIdCommandHandler _handler;
-//        private MockDatabase _mockDatabase;
+namespace Application.Tests.Commands.Birds
+{
+    [TestFixture]
+    public class DeleteBirdByIdCommandHandlerTests
+    {
+        private DeleteBirdByIdCommandHandler _handler;
+        private Mock<IAnimalRepository> _animalRepositoryMock;
 
-//        [SetUp]
-//        public void Setup()
-//        {
-//            _mockDatabase = new MockDatabase();
-//            _handler = new DeleteBirdByIdCommandHandler(_mockDatabase);
-//        }
+        [SetUp]
+        public void Setup()
+        {
+            _animalRepositoryMock = new Mock<IAnimalRepository>();
+            _handler = new DeleteBirdByIdCommandHandler(_animalRepositoryMock.Object);
+        }
 
-//        [Test]
-//        public async Task Handle_DeletesBirdInDatabase()
-//        {
-//            // Arrange
-//            var initialBird = new Bird { Id = Guid.NewGuid(), Name = "InitialBirdName" };
-//            _mockDatabase.Birds.Add(initialBird);
+        [Test]
+        public async Task Handle_DeletesBirdInRepository()
+        {
+            // Arrange
+            var deletedBirdId = Guid.NewGuid();
 
-//            // Create an instance of DeleteBirdByIdCommand
-//            var command = new DeleteBirdByIdCommand(
-//                deletedBirdId: initialBird.Id
-//            );
+            // Mocka upp en lista med fåglar i din repository
+            var birdsInDatabase = new[] { new Bird { Id = deletedBirdId, Name = "DeletedBird" } }.AsQueryable();
+            _animalRepositoryMock.Setup(repo => repo.GetAllBirds()).Returns((Task<List<Bird>>)birdsInDatabase);
 
-//            // Act
-//            var result = await _handler.Handle(command, CancellationToken.None);
+            // Create an instance of DeleteBirdByIdCommand
+            var command = new DeleteBirdByIdCommand(deletedBirdId);
 
-//            // Assert
-//            Assert.IsTrue(result);
-//        }
-//    }
-//}
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.IsTrue(result);
+
+            // Kolla att DeleteBirdById anropas med rätt ID
+            _animalRepositoryMock.Verify(repo => repo.DeleteBirdById(deletedBirdId), Times.Once);
+        }
+    }
+}

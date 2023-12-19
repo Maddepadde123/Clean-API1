@@ -1,40 +1,39 @@
-﻿//using Application.Commands.Birds;
-//using Application.Dtos;
-//using Domain.Models;
-//using Infrastructure.Database;
+﻿using Application.Commands.Birds;
+using Application.Dtos;
+using Domain.Models;
+using Infrastructure.Interfaces;
+using Moq;
+using NUnit.Framework;
 
-//namespace Application.Tests.Commands.Birds
-//{
-//    [TestFixture]
-//    public class AddBirdCommandHandlerTests
-//    {
-//        private AddBirdCommandHandler _handler;
+namespace Application.Tests.Commands.Birds
+{
+    [TestFixture]
+    public class AddBirdCommandHandlerTests
+    {
+        private AddBirdCommandHandler _handler;
 
-//        [SetUp]
-//        public void Setup()
-//        {
-//            _handler = new AddBirdCommandHandler(new MockDatabase());
-//        }
+        [SetUp]
+        public void Setup()
+        {
+            var mockAnimalRepository = new Mock<IAnimalRepository>();
+            _handler = new AddBirdCommandHandler(mockAnimalRepository.Object);
+        }
 
-//        [Test]
-//        public async Task Handle_AddsBirdToDatabase()
-//        {
-//            // Arrange
-//            var newBird = new BirdDto { Name = "NewBirdName" };
-//            var command = new AddBirdCommand(newBird);
+        [Test]
+        public async Task Handle_AddsBirdToDatabase()
+        {
+            // Arrange
+            var newBird = new BirdDto { Name = "NewBirdName", CanFly = true, Color = "Blue" };
+            var command = new AddBirdCommand(newBird);
 
-//            // Act
-//            var result = await _handler.Handle(command, CancellationToken.None);
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
 
-//            // Assert
-//            Assert.NotNull(result);
-//            Assert.IsInstanceOf<Bird>(result);
-
-//            // Kontrollera att fågeln har fått ett giltigt ID
-//            Assert.That(result.Id, Is.Not.EqualTo(Guid.Empty));
-
-//            // Kontrollera att fågeln har rätt namn enligt det som skickades med kommandot
-//            Assert.That(result.Name, Is.EqualTo("NewBirdName"));
-//        }
-//    }
-//}
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<Bird>(result);
+            Assert.That(result.Id, Is.Not.EqualTo(Guid.Empty));
+            Assert.AreEqual(newBird.Name, result.Name);
+        }
+    }
+}

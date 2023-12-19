@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using Domain.Models.AnimalUser;
 using Domain.Models.User;
 
 namespace Infrastructure.Database
@@ -60,5 +61,6 @@ namespace Infrastructure.Database
             new UserModel { Id = Guid.NewGuid(), UserName = "Sven" },
             new UserModel { Id = Guid.NewGuid(), UserName = "Emma" },
         };
+
     }
 }
