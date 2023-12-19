@@ -14,6 +14,6 @@ namespace Application.Validators
                 .NotEmpty().WithMessage("AnimalId is required.");
         }
 
-       
+
     }
 }

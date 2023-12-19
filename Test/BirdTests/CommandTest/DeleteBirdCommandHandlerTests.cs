@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Application.Commands.Birds.DeleteDog;
+﻿using Application.Commands.Birds.DeleteDog;
 using Domain.Models;
 using Infrastructure.Interfaces;
 using Moq;

@@ -9,7 +9,7 @@ namespace Application.Validators.User
         {
             RuleFor(user => user.Username).NotEmpty().WithMessage("Username cant be empty")
                 .NotNull().WithMessage("Username cant be NULL");
-            
+
         }
     }
 }

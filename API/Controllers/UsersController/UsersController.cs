@@ -11,14 +11,8 @@ using Application.Queries.Users.GetAllAnimalUsers;
 using Application.Queries.Users.GetAnimalUserById;
 using Application.Queries.Users.GetById;
 using Domain.Models;
-using FluentValidation;
-using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace API.Controllers
 {

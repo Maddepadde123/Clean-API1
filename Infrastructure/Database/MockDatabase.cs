@@ -1,5 +1,4 @@
 ﻿using Domain.Models;
-using Domain.Models.AnimalUser;
 using Domain.Models.User;
 
 namespace Infrastructure.Database
