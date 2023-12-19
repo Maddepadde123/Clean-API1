@@ -32,43 +32,126 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequests model)
         {
-            var token = await _mediator.Send(new UserLoginQuery
+            try
             {
-                UserName = model.Username,
-                Password = model.Password
-            });
+                var token = await _mediator.Send(new UserLoginQuery
+                {
+                    UserName = model.Username,
+                    Password = model.Password
+                });
 
-            return Ok(new { Token = token });
+                return Ok(new { Token = token });
+            }
+            catch (Exception ex)
+            {
+                // Logga fel och returnera lämpligt svar
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationDto newUser)
         {
-            return Ok(await _mediator.Send(new RegisterUserCommand(newUser)));
+            try
+            {
+                // Validera UserRegistrationDto
+                if (string.IsNullOrWhiteSpace(newUser.Username))
+                {
+                    return BadRequest("Username is required.");
+                }
+
+                if (string.IsNullOrWhiteSpace(newUser.Password))
+                {
+                    return BadRequest("Password is required.");
+                }
+
+                var result = await _mediator.Send(new RegisterUserCommand(newUser));
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Logga fel och returnera lämpligt svar
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpGet("GetAllUsers")]
         public async Task<IActionResult> GetAllUsers()
         {
-            return Ok(await _mediator.Send(new GetAllUsersQuery()));
+            try
+            {
+                var users = await _mediator.Send(new GetAllUsersQuery());
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                // Logga fel och returnera lämpligt svar
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpGet("GetUserById/{userId}")]
         public async Task<IActionResult> GetUserById(Guid userId)
         {
-            return Ok(await _mediator.Send(new GetUserByIdQuery(userId)));
+            try
+            {
+                var user = await _mediator.Send(new GetUserByIdQuery(userId));
+
+                if (user == null)
+                {
+                    return NotFound("User not found");
+                }
+
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                // Logga fel och returnera lämpligt svar
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpPut("UpdateUserById/{userId}")]
         public async Task<IActionResult> UpdateUser([FromBody] UserDto updatedUser, Guid userId)
         {
-            return Ok(await _mediator.Send(new UpdateUserByIdCommand(updatedUser, userId)));
+            try
+            {
+                // Validera UserDto
+                if (updatedUser == null)
+                {
+                    return BadRequest("UserDto is required.");
+                }
+
+                var result = await _mediator.Send(new UpdateUserByIdCommand(updatedUser, userId));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Logga fel och returnera lämpligt svar
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpDelete("DeleteUserById/{userId}")]
         public async Task<IActionResult> DeleteUser(Guid userId)
         {
-            return Ok(await _mediator.Send(new DeleteUserByIdCommand(userId)));
+            try
+            {
+                var result = await _mediator.Send(new DeleteUserByIdCommand(userId));
+
+                if (result == null)
+                {
+                    return NotFound("User not found");
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Logga fel och returnera lämpligt svar
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpPost("addNewConnectionAnimalUser")]
@@ -76,6 +159,22 @@ namespace API.Controllers
         {
             try
             {
+                // Validera AnimalUserDto
+                if (newAnimalUser == null)
+                {
+                    return BadRequest("AnimalUserDto is required.");
+                }
+
+                if (newAnimalUser.UserId == Guid.Empty)
+                {
+                    return BadRequest("UserId is required.");
+                }
+
+                if (newAnimalUser.AnimalId == Guid.Empty)
+                {
+                    return BadRequest("AnimalId is required.");
+                }
+
                 var result = await _mediator.Send(new AddAnimalUserCommand(newAnimalUser));
 
                 if (result != null)
@@ -89,35 +188,92 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                // Logga och hantera fel här
-                return StatusCode(500, "Internal server error");
+                // Logga fel och returnera lämpligt svar
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
         [HttpGet("GetAllAnimalUsers")]
         public async Task<IActionResult> GetAllAnimalUsers()
         {
-            return Ok(await _mediator.Send(new GetAllAnimalUsersQuery()));
+            try
+            {
+                var animalUsers = await _mediator.Send(new GetAllAnimalUsersQuery());
+                return Ok(animalUsers);
+            }
+            catch (Exception ex)
+            {
+                // Logga fel och returnera lämpligt svar
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpGet("GetAnimalUserById/{userId}/{animalId}")]
         public async Task<IActionResult> GetAnimalUserById(Guid userId, Guid animalId)
         {
-            return Ok(await _mediator.Send(new GetAnimalUserByIdQuery(userId, animalId)));
+            try
+            {
+                var animalUser = await _mediator.Send(new GetAnimalUserByIdQuery(userId, animalId));
+
+                if (animalUser == null)
+                {
+                    return NotFound("Animal-User connection not found");
+                }
+
+                return Ok(animalUser);
+            }
+            catch (Exception ex)
+            {
+                // Logga fel och returnera lämpligt svar
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpPut("UpdateAnimalUserById/{userId}/{animalId}")]
         public async Task<IActionResult> UpdateAnimalUser([FromBody] AnimalUserDto updatedAnimalUser, Guid userId, Guid animalId)
         {
-            return Ok(await _mediator.Send(new UpdateAnimalUserByIdCommand(updatedAnimalUser, userId, animalId)));
+            try
+            {
+                // Validera AnimalUserDto
+                if (updatedAnimalUser == null)
+                {
+                    return BadRequest("AnimalUserDto is required.");
+                }
+
+                if (updatedAnimalUser.UserId != userId || updatedAnimalUser.AnimalId != animalId)
+                {
+                    return BadRequest("Mismatch between the provided IDs and the IDs in the request body.");
+                }
+
+                var result = await _mediator.Send(new UpdateAnimalUserByIdCommand(updatedAnimalUser, userId, animalId));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Logga fel och returnera lämpligt svar
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpDelete("DeleteAnimalUserById/{userId}/{animalId}")]
         public async Task<IActionResult> DeleteAnimalUser(Guid userId, Guid animalId)
         {
-            return Ok(await _mediator.Send(new DeleteAnimalUserByIdCommand(userId, animalId)));
+            try
+            {
+                var result = await _mediator.Send(new DeleteAnimalUserByIdCommand(userId, animalId));
+
+                if (result == null)
+                {
+                    return NotFound("Animal-User connection not found");
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Logga fel och returnera lämpligt svar
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
-
 }
-

@@ -60,5 +60,6 @@ namespace Infrastructure.Database
             new UserModel { Id = Guid.NewGuid(), UserName = "Sven" },
             new UserModel { Id = Guid.NewGuid(), UserName = "Emma" },
         };
+
     }
 }
