@@ -12,12 +12,14 @@ using Application.Queries.Users.GetAnimalUserById;
 using Application.Queries.Users.GetById;
 using Domain.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IConfiguration _configuration;
@@ -77,6 +79,7 @@ namespace API.Controllers
         }
 
         [HttpGet("GetAllUsers")]
+        [Authorize]
         public async Task<IActionResult> GetAllUsers()
         {
             try

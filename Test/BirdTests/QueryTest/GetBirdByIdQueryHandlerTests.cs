@@ -1,50 +1,50 @@
-﻿//using Application.Queries.Birds.GetById;
-//using Infrastructure.Database;
+﻿using Application.Queries.Birds.GetById;
+using Domain.Models;
+using Infrastructure.Interfaces;
+using Moq;
+using NUnit.Framework;
 
-//namespace Test.BirdTests.QueryTest
-//{
-//    [TestFixture]
-//    public class GetBirdByIdQueryHandlerTests
-//    {
-//        private GetBirdByIdQueryHandler _handler;
-//        private MockDatabase _mockDatabase;
+namespace Application.Tests.Queries.Birds.GetById
+{
+    [TestFixture]
+    public class GetBirdByIdQueryHandlerTests
+    {
+        private GetBirdByIdQueryHandler _handler;
+        private Mock<IAnimalRepository> _mockAnimalRepository;
 
-//        [SetUp]
-//        public void SetUp()
-//        {
-//            _mockDatabase = new MockDatabase();
-//            _handler = new GetBirdByIdQueryHandler(_mockDatabase);
-//        }
+        [SetUp]
+        public void Setup()
+        {
+            _mockAnimalRepository = new Mock<IAnimalRepository>();
+            _handler = new GetBirdByIdQueryHandler(_mockAnimalRepository.Object);
+        }
 
-//        [Test]
-//        public async Task Handle_ValidId_ReturnsCorrectBird()
-//        {
-//            // Arrange
-//            var birdId = new Guid("59d8fc74-3c94-4ed8-9a38-36b0b6b1074a");
+        [Test]
+        public async Task Handle_ReturnsCorrectBird()
+        {
+            // Arrange
+            var birdId = Guid.NewGuid();
+            var query = new GetBirdByIdQuery(birdId);
 
-//            var query = new GetBirdByIdQuery(birdId);
+            var expectedBird = new Bird
+            {
+                Id = birdId,
+                Name = "MockBird",
+                CanFly = true,
+            };
 
-//            // Act
-//            var result = await _handler.Handle(query, CancellationToken.None);
+            _mockAnimalRepository.Setup(repo => repo.GetBirdById(birdId))
+                .ReturnsAsync(expectedBird);
 
-//            // Assert
-//            Assert.That(result, Is.Not.Null);
-//            Assert.That(result.Id, Is.EqualTo(birdId));
-//        }
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
 
-//        [Test]
-//        public async Task Handle_InvalidId_ReturnsNull()
-//        {
-//            // Arrange
-//            var invalidBirdId = Guid.NewGuid();
-
-//            var query = new GetBirdByIdQuery(invalidBirdId);
-
-//            // Act
-//            var result = await _handler.Handle(query, CancellationToken.None);
-
-//            // Assert
-//            Assert.That(result, Is.Null);
-//        }
-//    }
-//}
+            // Assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.InstanceOf<Bird>());
+            Assert.That(result.Id, Is.EqualTo(expectedBird.Id));
+            Assert.That(result.Name, Is.EqualTo(expectedBird.Name));
+            Assert.That(result.CanFly, Is.EqualTo(expectedBird.CanFly));
+        }
+    }
+}

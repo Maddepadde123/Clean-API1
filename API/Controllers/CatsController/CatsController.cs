@@ -7,12 +7,14 @@ using Application.Queries.Cats.GetById;
 using Application.Validators;
 using FluentValidation.Results;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.CatsController
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CatsController : ControllerBase
     {
         internal readonly IMediator _mediator;
@@ -43,6 +45,7 @@ namespace API.Controllers.CatsController
 
         [HttpGet]
         [Route("getCatById/{catId}")]
+        [Authorize]
         public async Task<IActionResult> GetCatById(Guid catId)
         {
             try

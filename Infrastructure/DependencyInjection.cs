@@ -19,8 +19,8 @@ namespace Infrastructure
                 options.UseSqlServer(connectionString);
             });
 
-            services.AddScoped<IUserRepository, UserRepository>(); // Byt ut UserRepository mot den faktiska implementationen
-            services.AddScoped<IAnimalRepository, AnimalRepository>(); // För AnimalRepository
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IAnimalRepository, AnimalRepository>();
             services.AddScoped<IAnimalUserRepository, AnimalUserRepository>();
             services.AddScoped<Authentication.Authentication>();
 

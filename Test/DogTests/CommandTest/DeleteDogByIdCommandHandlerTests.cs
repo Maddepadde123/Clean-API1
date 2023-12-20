@@ -1,40 +1,36 @@
-﻿//using Application.Commands.Dogs.DeleteDog;
-//using Domain.Models;
-//using Infrastructure.Database;
+﻿using Application.Commands.Dogs.DeleteDog;
+using Infrastructure.Interfaces;
+using Moq;
+using NUnit.Framework;
 
-//namespace Application.Tests.Commands.Dogs
-//{
-//    [TestFixture]
-//    public class DeleteDogByIdCommandHandlerTests
-//    {
-//        private DeleteDogByIdCommandHandler _handler;
-//        private MockDatabase _mockDatabase;
+namespace Application.Tests.Commands.Dogs
+{
+    [TestFixture]
+    public class DeleteDogByIdCommandHandlerTests
+    {
+        private DeleteDogByIdCommandHandler _handler;
+        private Mock<IAnimalRepository> _mockAnimalRepository;
 
-//        [SetUp]
-//        public void Setup()
-//        {
-//            _mockDatabase = new MockDatabase();
-//            _handler = new DeleteDogByIdCommandHandler(_mockDatabase);
-//        }
+        [SetUp]
+        public void Setup()
+        {
+            _mockAnimalRepository = new Mock<IAnimalRepository>();
+            _handler = new DeleteDogByIdCommandHandler(_mockAnimalRepository.Object);
+        }
 
-//        [Test]
-//        public async Task Handle_DeletesDogInDatabase()
-//        {
-//            // Arrange
-//            var initialDog = new Dog { Id = Guid.NewGuid(), Name = "InitialDogName" };
-//            _mockDatabase.Dogs.Add(initialDog);
+        [Test]
+        public async Task Handle_DeletesDogFromDatabase()
+        {
+            // Arrange
+            var dogIdToDelete = Guid.NewGuid();
+            var command = new DeleteDogByIdCommand(dogIdToDelete);
 
-//            // Create an instance of DeleteDogByIdCommand
-//            var command = new DeleteDogByIdCommand(
-//                deletedDogId: initialDog.Id
-//            );
+            // Act
+            await _handler.Handle(command, CancellationToken.None);
 
-//            // Act
-//            var result = await _handler.Handle(command, CancellationToken.None);
-
-//            // Assert
-//            Assert.IsTrue(result);
-
-//        }
-//    }
-//}
+            // Assert
+            // Verify that the DeleteDogById method was called with the correct dogIdToDelete
+            _mockAnimalRepository.Verify(repo => repo.DeleteDogById(dogIdToDelete), Times.Once);
+        }
+    }
+}

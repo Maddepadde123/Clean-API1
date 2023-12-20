@@ -7,12 +7,14 @@ using Application.Queries.Dogs.GetById;
 using Application.Validators;
 using FluentValidation.Results;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.DogsController
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DogsController : ControllerBase
     {
         internal readonly IMediator _mediator;
@@ -43,6 +45,7 @@ namespace API.Controllers.DogsController
 
         [HttpGet]
         [Route("getDogById/{dogId}")]
+
         public async Task<IActionResult> GetDogById(Guid dogId)
         {
             try

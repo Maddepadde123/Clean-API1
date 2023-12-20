@@ -1,51 +1,48 @@
-﻿//using Application.Queries.Dogs.GetById;
-//using Infrastructure.Database;
+﻿using Application.Queries.Dogs.GetById;
+using Domain.Models;
+using Infrastructure.Interfaces;
+using Moq;
+using NUnit.Framework;
 
-//namespace Test.DogTests.QueryTest
-//{
-//    [TestFixture]
-//    public class GetDogByIdQueryHandlerTests
-//    {
-//        private GetDogByIdQueryHandler _handler;
-//        private MockDatabase _mockDatabase;
+namespace Application.Tests.Queries.Dogs.GetById
+{
+    [TestFixture]
+    public class GetDogByIdQueryHandlerTests
+    {
+        private GetDogByIdQueryHandler _handler;
+        private Mock<IAnimalRepository> _mockAnimalRepository;
 
-//        [SetUp]
-//        public void SetUp()
-//        {
-//            // Initialize the handler and mock database before each test
-//            _mockDatabase = new MockDatabase();
-//            _handler = new GetDogByIdQueryHandler(_mockDatabase);
-//        }
+        [SetUp]
+        public void Setup()
+        {
+            _mockAnimalRepository = new Mock<IAnimalRepository>();
+            _handler = new GetDogByIdQueryHandler(_mockAnimalRepository.Object);
+        }
 
-//        [Test]
-//        public async Task Handle_ValidId_ReturnsCorrectDog()
-//        {
-//            // Arrange
-//            var dogId = new Guid("12345678-1234-5678-1234-567812345678");
+        [Test]
+        public async Task Handle_ReturnsCorrectDog()
+        {
+            // Arrange
+            var dogId = Guid.NewGuid();
+            var query = new GetDogByIdQuery(dogId);
 
-//            var query = new GetDogByIdQuery(dogId);
+            var expectedDog = new Dog
+            {
+                Id = dogId,
+                Name = "MockDog",
+            };
 
-//            // Act
-//            var result = await _handler.Handle(query, CancellationToken.None);
+            _mockAnimalRepository.Setup(repo => repo.GetDogById(dogId))
+                .ReturnsAsync(expectedDog);
 
-//            // Assert
-//            Assert.NotNull(result);
-//            Assert.That(result.Id, Is.EqualTo(dogId));
-//        }
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
 
-//        [Test]
-//        public async Task Handle_InvalidId_ReturnsNull()
-//        {
-//            // Arrange
-//            var invalidDogId = Guid.NewGuid();
-
-//            var query = new GetDogByIdQuery(invalidDogId);
-
-//            // Act
-//            var result = await _handler.Handle(query, CancellationToken.None);
-
-//            // Assert
-//            Assert.IsNull(result);
-//        }
-//    }
-//}
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<Dog>(result);
+            Assert.That(expectedDog.Id, Is.EqualTo(result.Id));
+            Assert.That(expectedDog.Name, Is.EqualTo(result.Name));
+        }
+    }
+}

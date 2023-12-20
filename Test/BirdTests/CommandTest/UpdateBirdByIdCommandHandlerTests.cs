@@ -1,51 +1,51 @@
-﻿//using Application.Commands.Birds.UpdateBird;
-//using Application.Dtos;
-//using Domain.Models;
-//using Infrastructure.Database;
+﻿using Application.Commands.Birds.UpdateBird;
+using Application.Dtos;
+using Domain.Models;
+using Infrastructure.Interfaces;
+using Moq;
+using NUnit.Framework;
 
-//namespace Application.Tests.Commands.Birds
-//{
-//    [TestFixture]
-//    public class UpdateBirdByIdCommandHandlerTests
-//    {
-//        private UpdateBirdByIdCommandHandler _handler;
-//        private MockDatabase _mockDatabase;
+namespace Application.Tests.Commands.Birds
+{
+    [TestFixture]
+    public class UpdateBirdByIdCommandHandlerTests
+    {
+        private UpdateBirdByIdCommandHandler _handler;
 
-//        [SetUp]
-//        public void Setup()
-//        {
-//            _mockDatabase = new MockDatabase();
-//            _handler = new UpdateBirdByIdCommandHandler(_mockDatabase);
-//        }
+        [SetUp]
+        public void Setup()
+        {
+            var mockAnimalRepository = new Mock<IAnimalRepository>();
+            _handler = new UpdateBirdByIdCommandHandler(mockAnimalRepository.Object);
+        }
 
-//        [Test]
-//        public async Task Handle_UpdatesBirdInDatabase()
-//        {
-//            // Arrange
-//            var initialBird = new Bird { Id = Guid.NewGuid(), Name = "InitialBirdName", CanFly = true };
-//            _mockDatabase.Birds.Add(initialBird);
+        [Test]
+        public async Task Handle_UpdateBirdInDatabase()
+        {
+            // Arrange
+            var birdId = Guid.NewGuid();
+            var updatedBirdDto = new BirdDto { Name = "UpdatedBirdName", CanFly = true, Color = "Green" };
+            var command = new UpdateBirdByIdCommand(updatedBirdDto, birdId);
 
-//            // Create an instance of UpdateDogByIdCommand
-//            var command = new UpdateBirdByIdCommand(
-//                updatedBird: new BirdDto { Name = "UpdatedBirdName", CanFly = false },
-//                id: initialBird.Id
-//            );
+            var existingBird = new Bird { Id = birdId, Name = "OriginalBirdName", CanFly = false, Color = "Blue" };
 
-//            // Act
-//            var result = await _handler.Handle(command, CancellationToken.None);
+            var animalRepositoryMock = new Mock<IAnimalRepository>();
+            animalRepositoryMock.Setup(repo => repo.GetBirdById(birdId)).ReturnsAsync(existingBird);
 
-//            // Assert
-//            Assert.NotNull(result);
-//            Assert.IsInstanceOf<Bird>(result);
+            _handler = new UpdateBirdByIdCommandHandler(animalRepositoryMock.Object);
 
-//            // Check that the bird has the correct updated name
-//            Assert.That(result.Name, Is.EqualTo("UpdatedBirdName"));
+            // Act
+            var updatedBird = await _handler.Handle(command, CancellationToken.None);
 
-//            // Check that the bird has been updated in MockDatabase
-//            var updatedBirdInDatabase = _mockDatabase.Birds.FirstOrDefault(bird => bird.Id == command.Id);
-//            Assert.That(updatedBirdInDatabase, Is.Not.Null);
-//            Assert.That(updatedBirdInDatabase.Name, Is.EqualTo("UpdatedBirdName"));
-//            Assert.That(updatedBirdInDatabase.CanFly, Is.EqualTo(false));
-//        }
-//    }
-//}
+            // Assert
+            Assert.NotNull(updatedBird);
+            Assert.IsInstanceOf<Bird>(updatedBird);
+            Assert.That(updatedBirdDto.Name, Is.EqualTo(updatedBird.Name));
+            Assert.That(updatedBirdDto.CanFly, Is.EqualTo(updatedBird.CanFly));
+            Assert.That(updatedBirdDto.Color, Is.EqualTo(updatedBird.Color));
+
+            // Ensure that the repository's UpdateBirdById method was called with the correct arguments
+            animalRepositoryMock.Verify(repo => repo.UpdateBirdById(It.IsAny<Bird>()), Times.Once);
+        }
+    }
+}
