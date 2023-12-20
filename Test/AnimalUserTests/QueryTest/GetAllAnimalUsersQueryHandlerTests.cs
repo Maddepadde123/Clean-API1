@@ -38,7 +38,10 @@ public class GetAllAnimalUsersQueryHandlerTests
 
         // Assert
         Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<List<AnimalUserModel>>());
         CollectionAssert.AreEqual(expectedAnimalUsers, result);
+
+        // Ensure that the repository's GetAllAnimalUsers method was called
         _mockAnimalUserRepository.Verify(repo => repo.GetAllAnimalUsers(), Times.Once);
     }
 

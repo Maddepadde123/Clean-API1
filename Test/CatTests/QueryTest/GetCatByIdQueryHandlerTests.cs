@@ -5,49 +5,44 @@ using Infrastructure.Interfaces;
 using Moq;
 using NUnit.Framework;
 
-[TestFixture]
-public class GetCatByIdQueryHandlerTests
+namespace Application.Tests.Queries.Cats.GetById
 {
-    private GetCatByIdQueryHandler _handler;
-    private Mock<IAnimalRepository> _mockAnimalRepository;
-
-    [SetUp]
-    public void Setup()
+    [TestFixture]
+    public class GetCatByIdQueryHandlerTests
     {
-        _mockAnimalRepository = new Mock<IAnimalRepository>();
-        _handler = new GetCatByIdQueryHandler(_mockAnimalRepository.Object);
-    }
+        private GetCatByIdQueryHandler _handler;
+        private Mock<IAnimalRepository> _mockAnimalRepository;
 
-    [Test]
-    public async Task Handle_ReturnsCorrectCat()
-    {
-        // Arrange
-        var catId = Guid.NewGuid();
-        var query = new GetCatByIdQuery(catId);
-        var expectedCat = new Cat
+        [SetUp]
+        public void Setup()
         {
-            Id = catId,
-            Name = "MockCat",
-        };
-
-        _mockAnimalRepository.Setup(repo => repo.GetCatById(catId))
-            .ReturnsAsync(expectedCat);
-
-        // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        if (result == null)
-        {
-            Console.WriteLine("Result is null. Check the handling logic.");
+            _mockAnimalRepository = new Mock<IAnimalRepository>();
+            _handler = new GetCatByIdQueryHandler(_mockAnimalRepository.Object);
         }
 
-        Assert.NotNull(result);
-        Assert.IsInstanceOf<Cat>(result);
-        Assert.AreEqual(expectedCat.Id, result.Id);
-        Assert.AreEqual(expectedCat.Name, result.Name);
+        [Test]
+        public async Task Handle_ReturnsCorrectCat()
+        {
+            // Arrange
+            var catId = Guid.NewGuid();
+            var query = new GetCatByIdQuery(catId);
+            var expectedCat = new Cat
+            {
+                Id = catId,
+                Name = "MockCat",
+            };
 
-        // Ensure that the repository's GetCatById method was called
-        _mockAnimalRepository.Verify(repo => repo.GetCatById(catId), Times.Once);
+            _mockAnimalRepository.Setup(repo => repo.GetCatById(catId))
+                .ReturnsAsync(expectedCat);
+
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
+
+            // Assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.InstanceOf<Cat>());
+            Assert.That(result.Id, Is.EqualTo(expectedCat.Id));
+            Assert.That(result.Name, Is.EqualTo(expectedCat.Name));
+        }
     }
 }

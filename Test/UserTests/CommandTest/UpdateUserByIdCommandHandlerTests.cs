@@ -5,77 +5,80 @@ using Infrastructure.Interfaces;
 using Moq;
 using NUnit.Framework;
 
-[TestFixture]
-public class UpdateUserByIdCommandHandlerTests
+namespace Application.Tests.Commands.Users
 {
-    private UpdateUserByIdCommandHandler _handler;
-
-    [SetUp]
-    public void Setup()
+    [TestFixture]
+    public class UpdateUserByIdCommandHandlerTests
     {
-        var mockUserRepository = new Mock<IUserRepository>();
-        _handler = new UpdateUserByIdCommandHandler(mockUserRepository.Object);
-    }
+        private UpdateUserByIdCommandHandler _handler;
 
-    [Test]
-    public async Task Handle_UpdateUserInDatabase()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-        var updatedUserDto = new UserDto
+        [SetUp]
+        public void Setup()
         {
-            Id = userId,
-            Username = "UpdatedUserName"
-            // Add other updated properties here as needed
-        };
+            var mockUserRepository = new Mock<IUserRepository>();
+            _handler = new UpdateUserByIdCommandHandler(mockUserRepository.Object);
+        }
 
-        var command = new UpdateUserByIdCommand(updatedUserDto, userId);
-
-        var existingUser = new UserModel
+        [Test]
+        public async Task Handle_UpdateUserInDatabase()
         {
-            Id = userId,
-            UserName = "OriginalUserName",
-            UserPassword = "OriginalPassword"
-            // Add other existing properties here as needed
-        };
+            // Arrange
+            var userId = Guid.NewGuid();
+            var updatedUserDto = new UserDto
+            {
+                Id = userId,
+                Username = "UpdatedUserName"
+                // Add other updated properties here as needed
+            };
 
-        var userRepositoryMock = new Mock<IUserRepository>();
-        userRepositoryMock.Setup(repo => repo.GetUserById(userId)).ReturnsAsync(existingUser);
+            var command = new UpdateUserByIdCommand(updatedUserDto, userId);
 
-        _handler = new UpdateUserByIdCommandHandler(userRepositoryMock.Object);
+            var existingUser = new UserModel
+            {
+                Id = userId,
+                UserName = "OriginalUserName",
+                UserPassword = "OriginalPassword"
+                // Add other existing properties here as needed
+            };
 
-        // Act
-        var updatedUser = await _handler.Handle(command, CancellationToken.None);
+            var userRepositoryMock = new Mock<IUserRepository>();
+            userRepositoryMock.Setup(repo => repo.GetUserById(userId)).ReturnsAsync(existingUser);
 
-        // Assert
-        Assert.NotNull(updatedUser);
-        Assert.IsInstanceOf<UserModel>(updatedUser);
-        Assert.AreEqual(updatedUserDto.Username, updatedUser.UserName);
-        // Add assertions for other properties as needed
+            _handler = new UpdateUserByIdCommandHandler(userRepositoryMock.Object);
 
-        // Ensure that the repository's UpdateUserById method was called with the correct arguments
-        userRepositoryMock.Verify(repo => repo.UpdateUserById(It.IsAny<UserModel>()), Times.Once);
-    }
+            // Act
+            var updatedUser = await _handler.Handle(command, CancellationToken.None);
 
-    [Test]
-    public void Handle_UserNotFound_ThrowsException()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-        var updatedUserDto = new UserDto
+            // Assert
+            Assert.NotNull(updatedUser);
+            Assert.IsInstanceOf<UserModel>(updatedUser);
+            Assert.That(updatedUserDto.Username, Is.EqualTo(updatedUser.UserName));
+            // Add assertions for other properties as needed
+
+            // Ensure that the repository's UpdateUserById method was called with the correct arguments
+            userRepositoryMock.Verify(repo => repo.UpdateUserById(It.IsAny<UserModel>()), Times.Once);
+        }
+
+        [Test]
+        public void Handle_UserNotFound_ThrowsException()
         {
-            Id = userId,
-            Username = "UpdatedUserName"
-        };
+            // Arrange
+            var userId = Guid.NewGuid();
+            var updatedUserDto = new UserDto
+            {
+                Id = userId,
+                Username = "UpdatedUserName"
+            };
 
-        var command = new UpdateUserByIdCommand(updatedUserDto, userId);
+            var command = new UpdateUserByIdCommand(updatedUserDto, userId);
 
-        var userRepositoryMock = new Mock<IUserRepository>();
-        userRepositoryMock.Setup(repo => repo.GetUserById(userId)).ReturnsAsync((UserModel)null);
+            var userRepositoryMock = new Mock<IUserRepository>();
+            userRepositoryMock.Setup(repo => repo.GetUserById(userId)).ReturnsAsync((UserModel)null);
 
-        _handler = new UpdateUserByIdCommandHandler(userRepositoryMock.Object);
+            _handler = new UpdateUserByIdCommandHandler(userRepositoryMock.Object);
 
-        // Act & Assert
-        Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
+            // Act & Assert
+            Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
+        }
     }
 }

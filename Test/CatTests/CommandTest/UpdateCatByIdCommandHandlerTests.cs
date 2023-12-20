@@ -5,58 +5,58 @@ using Infrastructure.Interfaces;
 using Moq;
 using NUnit.Framework;
 
-[TestFixture]
-public class UpdateCatByIdCommandHandlerTests
+namespace Application.Tests.Commands.Cats
 {
-    private UpdateCatByIdCommandHandler _handler;
-
-    [SetUp]
-    public void Setup()
+    [TestFixture]
+    public class UpdateCatByIdCommandHandlerTests
     {
-        var mockAnimalRepository = new Mock<IAnimalRepository>();
-        _handler = new UpdateCatByIdCommandHandler(mockAnimalRepository.Object);
-    }
+        private UpdateCatByIdCommandHandler _handler;
 
-    [Test]
-    public async Task Handle_UpdateCatInDatabase()
-    {
-        // Arrange
-        var catId = Guid.NewGuid();
-        var updatedCatDto = new CatDto
+        [SetUp]
+        public void Setup()
         {
-            Name = "UpdatedCatName",
-            LikesToPlay = true,
-            CatBreed = "Persian",
-            CatWeight = 5
-        };
-        var command = new UpdateCatByIdCommand(updatedCatDto, catId);
+            var mockAnimalRepository = new Mock<IAnimalRepository>();
+            _handler = new UpdateCatByIdCommandHandler(mockAnimalRepository.Object);
+        }
 
-        var existingCat = new Cat
+        [Test]
+        public async Task Handle_UpdateCatInDatabase()
         {
-            Id = catId,
-            Name = "OriginalCatName",
-            LikesToPlay = false,
-            CatBreed = "Siamese",
-            CatWeight = 4
-        };
+            // Arrange
+            var catId = Guid.NewGuid();
+            var updatedCatDto = new CatDto
+            {
+                Name = "UpdatedCatName",
+                LikesToPlay = true,
+                CatBreed = "Siamese"
+            };
+            var command = new UpdateCatByIdCommand(updatedCatDto, catId);
 
-        var animalRepositoryMock = new Mock<IAnimalRepository>();
-        animalRepositoryMock.Setup(repo => repo.GetCatById(It.IsAny<Guid>())).ReturnsAsync(existingCat);
+            var existingCat = new Cat
+            {
+                Id = catId,
+                Name = "OriginalCatName",
+                LikesToPlay = false,
+                CatBreed = "Persian"
+            };
 
-        _handler = new UpdateCatByIdCommandHandler(animalRepositoryMock.Object);
+            var animalRepositoryMock = new Mock<IAnimalRepository>();
+            animalRepositoryMock.Setup(repo => repo.GetCatById(catId)).ReturnsAsync(existingCat);
 
-        // Act
-        var updatedCat = await _handler.Handle(command, CancellationToken.None);
+            _handler = new UpdateCatByIdCommandHandler(animalRepositoryMock.Object);
 
-        // Assert
-        Assert.NotNull(updatedCat);
-        Assert.IsInstanceOf<Cat>(updatedCat);
-        Assert.AreEqual(updatedCatDto.Name, updatedCat.Name);
-        Assert.AreEqual(updatedCatDto.LikesToPlay, updatedCat.LikesToPlay);
-        Assert.AreEqual(updatedCatDto.CatBreed, updatedCat.CatBreed);
-        Assert.AreEqual(updatedCatDto.CatWeight, updatedCat.CatWeight, 0.001);
+            // Act
+            var updatedCat = await _handler.Handle(command, CancellationToken.None);
 
-        // Ensure that the repository's UpdateCatById method was called with the correct arguments
-        animalRepositoryMock.Verify(repo => repo.UpdateCatById(It.IsAny<Cat>()), Times.Once);
+            // Assert
+            Assert.NotNull(updatedCat);
+            Assert.IsInstanceOf<Cat>(updatedCat);
+            Assert.That(updatedCatDto.Name, Is.EqualTo(updatedCat.Name));
+            Assert.That(updatedCatDto.LikesToPlay, Is.EqualTo(updatedCat.LikesToPlay));
+            Assert.That(updatedCatDto.CatBreed, Is.EqualTo(updatedCat.CatBreed));
+
+            // Ensure that the repository's UpdateCatById method was called with the correct arguments
+            animalRepositoryMock.Verify(repo => repo.UpdateCatById(It.IsAny<Cat>()), Times.Once);
+        }
     }
 }

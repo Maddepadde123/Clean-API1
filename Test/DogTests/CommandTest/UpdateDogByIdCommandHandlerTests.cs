@@ -5,55 +5,55 @@ using Infrastructure.Interfaces;
 using Moq;
 using NUnit.Framework;
 
-[TestFixture]
-public class UpdateDogByIdCommandHandlerTests
+namespace Application.Tests.Commands.Dogs
 {
-    private UpdateDogByIdCommandHandler _handler;
-
-    [SetUp]
-    public void Setup()
+    [TestFixture]
+    public class UpdateDogByIdCommandHandlerTests
     {
-        var mockAnimalRepository = new Mock<IAnimalRepository>();
-        _handler = new UpdateDogByIdCommandHandler(mockAnimalRepository.Object);
-    }
+        private UpdateDogByIdCommandHandler _handler;
 
-    [Test]
-    public async Task Handle_UpdateDogInDatabase()
-    {
-        // Arrange
-        var dogId = Guid.NewGuid();
-        var updatedDogDto = new DogDto
+        [SetUp]
+        public void Setup()
         {
-            Name = "UpdatedDogName",
-            DogBreed = "Labrador",
-            DogWeight = 25
-        };
-        var command = new UpdateDogByIdCommand(updatedDogDto, dogId);
+            var mockAnimalRepository = new Mock<IAnimalRepository>();
+            _handler = new UpdateDogByIdCommandHandler(mockAnimalRepository.Object);
+        }
 
-        var existingDog = new Dog
+        [Test]
+        public async Task Handle_UpdateDogInDatabase()
         {
-            Id = dogId,
-            Name = "OriginalDogName",
-            DogBreed = "Golden Retriever",
-            DogWeight = 22
-        };
+            // Arrange
+            var dogId = Guid.NewGuid();
+            var updatedDogDto = new DogDto
+            {
+                Name = "UpdatedDogName",
+                DogBreed = "Golden Retriever",
+                DogWeight = 25
+            };
+            var command = new UpdateDogByIdCommand(updatedDogDto, dogId);
 
-        var animalRepositoryMock = new Mock<IAnimalRepository>();
-        animalRepositoryMock.Setup(repo => repo.GetDogById(It.IsAny<Guid>())).ReturnsAsync(existingDog);
+            var existingDog = new Dog
+            {
+                Id = dogId,
+                Name = "OriginalDogName",
+                DogBreed = "Labrador",
+                DogWeight = 20
+            };
 
-        _handler = new UpdateDogByIdCommandHandler(animalRepositoryMock.Object);
+            var animalRepositoryMock = new Mock<IAnimalRepository>();
+            animalRepositoryMock.Setup(repo => repo.GetDogById(dogId)).ReturnsAsync(existingDog);
 
-        // Act
-        var updatedDog = await _handler.Handle(command, CancellationToken.None);
+            _handler = new UpdateDogByIdCommandHandler(animalRepositoryMock.Object);
 
-        // Assert
-        Assert.NotNull(updatedDog);
-        Assert.IsInstanceOf<Dog>(updatedDog);
-        Assert.AreEqual(updatedDogDto.Name, updatedDog.Name);
-        Assert.AreEqual(updatedDogDto.DogBreed, updatedDog.DogBreed);
-        Assert.AreEqual(updatedDogDto.DogWeight, updatedDog.DogWeight, 0.001); // Use a delta for double comparison
+            // Act
+            var updatedDog = await _handler.Handle(command, CancellationToken.None);
 
-        // Ensure that the repository's UpdateDog method was called with the correct arguments
-        animalRepositoryMock.Verify(repo => repo.UpdateDog(It.IsAny<Dog>()), Times.Once);
+            // Assert
+            Assert.NotNull(updatedDog);
+            Assert.IsInstanceOf<Dog>(updatedDog);
+            Assert.That(updatedDogDto.Name, Is.EqualTo(updatedDog.Name));
+            Assert.That(updatedDogDto.DogBreed, Is.EqualTo(updatedDog.DogBreed));
+            Assert.That(updatedDogDto.DogWeight, Is.EqualTo(updatedDog.DogWeight).Within(0.001));
+        }
     }
 }

@@ -5,48 +5,48 @@ using Infrastructure.Interfaces;
 using Moq;
 using NUnit.Framework;
 
-[TestFixture]
-public class AddAnimalUserCommandHandlerTests
+namespace Application.Tests.Commands.Users.AddAnimalUser
 {
-    private AddAnimalUserCommandHandler _handler;
-    private Mock<IAnimalUserRepository> _mockAnimalUserRepository;
-
-    [SetUp]
-    public void Setup()
+    [TestFixture]
+    public class AddAnimalUserCommandHandlerTests
     {
-        _mockAnimalUserRepository = new Mock<IAnimalUserRepository>();
-        _handler = new AddAnimalUserCommandHandler(_mockAnimalUserRepository.Object);
-    }
+        private AddAnimalUserCommandHandler _handler;
+        private Mock<IAnimalUserRepository> _mockAnimalUserRepository;
 
-    [Test]
-    public async Task Handle_ReturnsCorrectAnimalUser()
-    {
-        // Arrange
-        var command = new AddAnimalUserCommand(new AnimalUserDto
+        [SetUp]
+        public void Setup()
         {
-            UserId = Guid.NewGuid(),
-            AnimalId = Guid.NewGuid(),
-        });
+            _mockAnimalUserRepository = new Mock<IAnimalUserRepository>();
+            _handler = new AddAnimalUserCommandHandler(_mockAnimalUserRepository.Object);
+        }
 
-        var expectedAnimalUser = new AnimalUserModel
+        [Test]
+        public async Task Handle_ReturnsCorrectAnimalUser()
         {
-            UserId = command.UserId,
-            AnimalId = command.AnimalId,
-        };
+            // Arrange
+            var command = new AddAnimalUserCommand(new AnimalUserDto
+            {
+                UserId = Guid.NewGuid(),
+                AnimalId = Guid.NewGuid(),
+            });
 
-        _mockAnimalUserRepository.Setup(repo => repo.AddAnimalUserAsync(It.IsAny<AnimalUserModel>()))
-            .ReturnsAsync(expectedAnimalUser);
+            var expectedAnimalUser = new AnimalUserModel
+            {
+                UserId = command.UserId,
+                AnimalId = command.AnimalId,
+            };
 
-        // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+            _mockAnimalUserRepository.Setup(repo => repo.AddAnimalUserAsync(It.IsAny<AnimalUserModel>()))
+                .ReturnsAsync(expectedAnimalUser);
 
-        // Assert
-        Assert.NotNull(result);
-        Assert.IsInstanceOf<AnimalUserModel>(result);
-        Assert.AreEqual(expectedAnimalUser.UserId, result.UserId);
-        Assert.AreEqual(expectedAnimalUser.AnimalId, result.AnimalId);
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
 
-        // Ensure that the repository's AddAnimalUserAsync method was called with the correct arguments
-        _mockAnimalUserRepository.Verify(repo => repo.AddAnimalUserAsync(It.IsAny<AnimalUserModel>()), Times.Once);
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<AnimalUserModel>(result);
+            Assert.That(expectedAnimalUser.UserId, Is.EqualTo(result.UserId));
+            Assert.That(expectedAnimalUser.AnimalId, Is.EqualTo(result.AnimalId));
+        }
     }
 }
