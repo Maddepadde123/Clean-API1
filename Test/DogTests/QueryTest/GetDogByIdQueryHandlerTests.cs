@@ -4,45 +4,42 @@ using Infrastructure.Interfaces;
 using Moq;
 using NUnit.Framework;
 
-namespace Application.Tests.Queries.Dogs.GetById
+[TestFixture]
+public class GetDogByIdQueryHandlerTests
 {
-    [TestFixture]
-    public class GetDogByIdQueryHandlerTests
+    private GetDogByIdQueryHandler _handler;
+    private Mock<IAnimalRepository> _mockAnimalRepository;
+
+    [SetUp]
+    public void Setup()
     {
-        private GetDogByIdQueryHandler _handler;
-        private Mock<IAnimalRepository> _mockAnimalRepository;
+        _mockAnimalRepository = new Mock<IAnimalRepository>();
+        _handler = new GetDogByIdQueryHandler(_mockAnimalRepository.Object);
+    }
 
-        [SetUp]
-        public void Setup()
+    [Test]
+    public async Task Handle_ReturnsCorrectDog()
+    {
+        // Arrange
+        var dogId = Guid.NewGuid();
+        var query = new GetDogByIdQuery(dogId);
+
+        var expectedDog = new Dog
         {
-            _mockAnimalRepository = new Mock<IAnimalRepository>();
-            _handler = new GetDogByIdQueryHandler(_mockAnimalRepository.Object);
-        }
+            Id = dogId,
+            Name = "MockDog",
+        };
 
-        [Test]
-        public async Task Handle_ReturnsCorrectDog()
-        {
-            // Arrange
-            var dogId = Guid.NewGuid();
-            var query = new GetDogByIdQuery(dogId);
+        _mockAnimalRepository.Setup(repo => repo.GetDogById(It.IsAny<Guid>()))
+            .ReturnsAsync(expectedDog);
 
-            var expectedDog = new Dog
-            {
-                Id = dogId,
-                Name = "MockDog",
-            };
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
 
-            _mockAnimalRepository.Setup(repo => repo.GetDogById(dogId))
-                .ReturnsAsync(expectedDog);
-
-            // Act
-            var result = await _handler.Handle(query, CancellationToken.None);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<Dog>(result);
-            Assert.AreEqual(expectedDog.Id, result.Id);
-            Assert.AreEqual(expectedDog.Name, result.Name);
-        }
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsInstanceOf<Dog>(result);
+        Assert.AreEqual(expectedDog.Id, result.Id);
+        Assert.AreEqual(expectedDog.Name, result.Name);
     }
 }

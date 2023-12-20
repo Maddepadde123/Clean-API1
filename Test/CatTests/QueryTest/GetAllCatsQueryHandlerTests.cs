@@ -5,40 +5,40 @@ using Infrastructure.Interfaces;
 using Moq;
 using NUnit.Framework;
 
-namespace Application.Tests.Queries.Cats
+[TestFixture]
+public class GetAllCatsQueryHandlerTests
 {
-    [TestFixture]
-    public class GetAllCatsQueryHandlerTests
+    private GetAllCatsQueryHandler _handler;
+    private Mock<IAnimalRepository> _mockAnimalRepository;
+
+    [SetUp]
+    public void Setup()
     {
-        private GetAllCatsQueryHandler _handler;
-        private Mock<IAnimalRepository> _mockAnimalRepository;
+        _mockAnimalRepository = new Mock<IAnimalRepository>();
+        _handler = new GetAllCatsQueryHandler(_mockAnimalRepository.Object);
+    }
 
-        [SetUp]
-        public void Setup()
+    [Test]
+    public async Task Handle_ReturnsAllCatsFromRepository()
+    {
+        // Arrange
+        var expectedCats = new List<Cat>
         {
-            _mockAnimalRepository = new Mock<IAnimalRepository>();
-            _handler = new GetAllCatsQueryHandler(_mockAnimalRepository.Object);
-        }
+            new Cat { Id = Guid.NewGuid(), Name = "Cat1", LikesToPlay = true },
+            new Cat { Id = Guid.NewGuid(), Name = "Cat2", LikesToPlay = false }
+        };
 
-        [Test]
-        public async Task Handle_ReturnsAllCatsFromRepository()
-        {
-            // Arrange
-            var expectedCats = new List<Cat>
-            {
-                new Cat { Id = Guid.NewGuid(), Name = "Cat1", LikesToPlay = true },
-                new Cat { Id = Guid.NewGuid(), Name = "Cat2", LikesToPlay = false }
-            };
+        _mockAnimalRepository.Setup(repo => repo.GetAllCats()).ReturnsAsync(expectedCats);
 
-            _mockAnimalRepository.Setup(repo => repo.GetAllCats()).ReturnsAsync(expectedCats);
+        // Act
+        var result = await _handler.Handle(new GetAllCatsQuery(), CancellationToken.None);
 
-            // Act
-            var result = await _handler.Handle(new GetAllCatsQuery(), CancellationToken.None);
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsInstanceOf<List<Cat>>(result);
+        Assert.AreEqual(expectedCats.Count, result.Count);
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<List<Cat>>(result);
-            Assert.AreEqual(expectedCats.Count, result.Count);
-        }
+        // Ensure that the repository's GetAllCats method was called
+        _mockAnimalRepository.Verify(repo => repo.GetAllCats(), Times.Once);
     }
 }

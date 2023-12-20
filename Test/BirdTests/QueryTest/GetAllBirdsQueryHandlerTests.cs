@@ -5,40 +5,40 @@ using Infrastructure.Interfaces;
 using Moq;
 using NUnit.Framework;
 
-namespace Application.Tests.Queries.Birds
+[TestFixture]
+public class GetAllBirdsQueryHandlerTests
 {
-    [TestFixture]
-    public class GetAllBirdsQueryHandlerTests
+    private GetAllBirdsQueryHandler _handler;
+    private Mock<IAnimalRepository> _mockAnimalRepository;
+
+    [SetUp]
+    public void Setup()
     {
-        private GetAllBirdsQueryHandler _handler;
-        private Mock<IAnimalRepository> _mockAnimalRepository;
+        _mockAnimalRepository = new Mock<IAnimalRepository>();
+        _handler = new GetAllBirdsQueryHandler(_mockAnimalRepository.Object);
+    }
 
-        [SetUp]
-        public void Setup()
+    [Test]
+    public async Task Handle_ReturnsAllBirdsFromRepository()
+    {
+        // Arrange
+        var expectedBirds = new List<Bird>
         {
-            _mockAnimalRepository = new Mock<IAnimalRepository>();
-            _handler = new GetAllBirdsQueryHandler(_mockAnimalRepository.Object);
-        }
+            new Bird { Id = Guid.NewGuid(), Name = "Bird1", CanFly = true },
+            new Bird { Id = Guid.NewGuid(), Name = "Bird2", CanFly = false }
+        };
 
-        [Test]
-        public async Task Handle_ReturnsAllBirdsFromRepository()
-        {
-            // Arrange
-            var expectedBirds = new List<Bird>
-            {
-                new Bird { Id = Guid.NewGuid(), Name = "Bird1", CanFly = true },
-                new Bird { Id = Guid.NewGuid(), Name = "Bird2", CanFly = false }
-            };
+        _mockAnimalRepository.Setup(repo => repo.GetAllBirds()).ReturnsAsync(expectedBirds);
 
-            _mockAnimalRepository.Setup(repo => repo.GetAllBirds()).ReturnsAsync(expectedBirds);
+        // Act
+        var result = await _handler.Handle(new GetAllBirdsQuery(), CancellationToken.None);
 
-            // Act
-            var result = await _handler.Handle(new GetAllBirdsQuery(), CancellationToken.None);
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsInstanceOf<List<Bird>>(result);
+        Assert.AreEqual(expectedBirds.Count, result.Count);
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<List<Bird>>(result);
-            Assert.AreEqual(expectedBirds.Count, result.Count);
-        }
+        // Ensure that the repository's GetAllBirds method was called
+        _mockAnimalRepository.Verify(repo => repo.GetAllBirds(), Times.Once);
     }
 }

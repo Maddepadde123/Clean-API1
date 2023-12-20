@@ -4,47 +4,47 @@ using Infrastructure.Interfaces;
 using Moq;
 using NUnit.Framework;
 
-namespace Application.Tests.Queries.Birds.GetById
+[TestFixture]
+public class GetBirdByIdQueryHandlerTests
 {
-    [TestFixture]
-    public class GetBirdByIdQueryHandlerTests
+    private GetBirdByIdQueryHandler _handler;
+    private Mock<IAnimalRepository> _mockAnimalRepository;
+
+    [SetUp]
+    public void Setup()
     {
-        private GetBirdByIdQueryHandler _handler;
-        private Mock<IAnimalRepository> _mockAnimalRepository;
+        _mockAnimalRepository = new Mock<IAnimalRepository>();
+        _handler = new GetBirdByIdQueryHandler(_mockAnimalRepository.Object);
+    }
 
-        [SetUp]
-        public void Setup()
+    [Test]
+    public async Task Handle_ReturnsCorrectBird()
+    {
+        // Arrange
+        var birdId = Guid.NewGuid();
+        var query = new GetBirdByIdQuery(birdId);
+
+        var expectedBird = new Bird
         {
-            _mockAnimalRepository = new Mock<IAnimalRepository>();
-            _handler = new GetBirdByIdQueryHandler(_mockAnimalRepository.Object);
-        }
+            Id = birdId,
+            Name = "MockBird",
+            CanFly = true,
+        };
 
-        [Test]
-        public async Task Handle_ReturnsCorrectBird()
-        {
-            // Arrange
-            var birdId = Guid.NewGuid();
-            var query = new GetBirdByIdQuery(birdId);
+        _mockAnimalRepository.Setup(repo => repo.GetBirdById(birdId))
+            .ReturnsAsync(expectedBird);
 
-            var expectedBird = new Bird
-            {
-                Id = birdId,
-                Name = "MockBird",
-                CanFly = true,
-            };
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
 
-            _mockAnimalRepository.Setup(repo => repo.GetBirdById(birdId))
-                .ReturnsAsync(expectedBird);
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsInstanceOf<Bird>(result);
+        Assert.AreEqual(expectedBird.Id, result.Id);
+        Assert.AreEqual(expectedBird.Name, result.Name);
+        Assert.AreEqual(expectedBird.CanFly, result.CanFly);
 
-            // Act
-            var result = await _handler.Handle(query, CancellationToken.None);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<Bird>(result);
-            Assert.AreEqual(expectedBird.Id, result.Id);
-            Assert.AreEqual(expectedBird.Name, result.Name);
-            Assert.AreEqual(expectedBird.CanFly, result.CanFly);
-        }
+        // Ensure that the repository's GetBirdById method was called
+        _mockAnimalRepository.Verify(repo => repo.GetBirdById(birdId), Times.Once);
     }
 }

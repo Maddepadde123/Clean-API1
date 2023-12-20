@@ -4,64 +4,67 @@ using Infrastructure.Interfaces;
 using Moq;
 using NUnit.Framework;
 
-namespace Application.Tests.Queries.Users.GetById
+[TestFixture]
+public class GetUserByIdQueryHandlerTests
 {
-    [TestFixture]
-    public class GetUserByIdQueryHandlerTests
+    private GetUserByIdQueryHandler _handler;
+    private Mock<IUserRepository> _mockUserRepository;
+
+    [SetUp]
+    public void Setup()
     {
-        private GetUserByIdQueryHandler _handler;
-        private Mock<IUserRepository> _mockUserRepository;
+        _mockUserRepository = new Mock<IUserRepository>();
+        _handler = new GetUserByIdQueryHandler(_mockUserRepository.Object);
+    }
 
-        [SetUp]
-        public void Setup()
+    [Test]
+    public async Task Handle_ReturnsCorrectUser()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var query = new GetUserByIdQuery(userId);
+
+        var expectedUser = new UserModel
         {
-            _mockUserRepository = new Mock<IUserRepository>();
-            _handler = new GetUserByIdQueryHandler(_mockUserRepository.Object);
-        }
+            Id = userId,
+            UserName = "TestUser",
+            UserPassword = "TestPassword",
+        };
 
-        [Test]
-        public async Task Handle_ReturnsCorrectUser()
-        {
-            // Arrange
-            var userId = Guid.NewGuid();
-            var query = new GetUserByIdQuery(userId);
+        _mockUserRepository.Setup(repo => repo.GetUserById(userId))
+            .ReturnsAsync(expectedUser);
 
-            var expectedUser = new UserModel
-            {
-                Id = userId,
-                UserName = "TestUser",
-                UserPassword = "TestPassword",
-            };
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
 
-            _mockUserRepository.Setup(repo => repo.GetUserById(userId))
-                .ReturnsAsync(expectedUser);
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsInstanceOf<UserModel>(result);
+        Assert.AreEqual(expectedUser.Id, result.Id);
+        Assert.AreEqual(expectedUser.UserName, result.UserName);
+        Assert.AreEqual(expectedUser.UserPassword, result.UserPassword);
 
-            // Act
-            var result = await _handler.Handle(query, CancellationToken.None);
+        // Ensure that the repository's GetUserById method was called
+        _mockUserRepository.Verify(repo => repo.GetUserById(userId), Times.Once);
+    }
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<UserModel>(result);
-            Assert.AreEqual(expectedUser.Id, result.Id);
-            Assert.AreEqual(expectedUser.UserName, result.UserName);
-            Assert.AreEqual(expectedUser.UserPassword, result.UserPassword);
-        }
+    [Test]
+    public async Task Handle_UserNotFound_ReturnsNull()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var query = new GetUserByIdQuery(userId);
 
-        [Test]
-        public async Task Handle_UserNotFound_ReturnsNull()
-        {
-            // Arrange
-            var userId = Guid.NewGuid();
-            var query = new GetUserByIdQuery(userId);
+        _mockUserRepository.Setup(repo => repo.GetUserById(userId))
+            .ReturnsAsync((UserModel)null);
 
-            _mockUserRepository.Setup(repo => repo.GetUserById(userId))
-                .ReturnsAsync((UserModel)null);
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
 
-            // Act
-            var result = await _handler.Handle(query, CancellationToken.None);
+        // Assert
+        Assert.Null(result);
 
-            // Assert
-            Assert.Null(result);
-        }
+        // Ensure that the repository's GetUserById method was called
+        _mockUserRepository.Verify(repo => repo.GetUserById(userId), Times.Once);
     }
 }

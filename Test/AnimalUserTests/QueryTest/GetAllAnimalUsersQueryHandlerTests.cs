@@ -5,65 +5,54 @@ using Infrastructure.Interfaces;
 using Moq;
 using NUnit.Framework;
 
-namespace Application.Tests.Queries.Users
+[TestFixture]
+public class GetAllAnimalUsersQueryHandlerTests
 {
-    [TestFixture]
-    public class GetAllAnimalUsersQueryHandlerTests
+    private GetAllAnimalUsersQueryHandler _handler;
+    private Mock<IAnimalUserRepository> _mockAnimalUserRepository;
+
+    [SetUp]
+    public void Setup()
     {
-        private GetAllAnimalUsersQueryHandler _handler;
-        private Mock<IAnimalUserRepository> _mockAnimalUserRepository;
+        _mockAnimalUserRepository = new Mock<IAnimalUserRepository>();
+        _handler = new GetAllAnimalUsersQueryHandler(_mockAnimalUserRepository.Object);
+    }
 
-        [SetUp]
-        public void Setup()
+    [Test]
+    public async Task Handle_ReturnsAllAnimalUsers()
+    {
+        // Arrange
+        var query = new GetAllAnimalUsersQuery();
+
+        var expectedAnimalUsers = new List<AnimalUserModel>
         {
-            _mockAnimalUserRepository = new Mock<IAnimalUserRepository>();
-            _handler = new GetAllAnimalUsersQueryHandler(_mockAnimalUserRepository.Object);
-        }
+            new AnimalUserModel { UserId = Guid.NewGuid(), AnimalId = Guid.NewGuid() },
+            new AnimalUserModel { UserId = Guid.NewGuid(), AnimalId = Guid.NewGuid() },
+        };
 
-        [Test]
-        public async Task Handle_ReturnsAllAnimalUsers()
-        {
-            // Arrange
-            var query = new GetAllAnimalUsersQuery();
+        _mockAnimalUserRepository.Setup(repo => repo.GetAllAnimalUsers())
+            .ReturnsAsync(expectedAnimalUsers);
 
-            var expectedAnimalUsers = new List<AnimalUserModel>
-            {
-                new AnimalUserModel
-                {
-                    UserId = Guid.NewGuid(),
-                    AnimalId = Guid.NewGuid(),
-                },
-                new AnimalUserModel
-                {
-                    UserId = Guid.NewGuid(),
-                    AnimalId = Guid.NewGuid(),
-                },
-            };
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
 
-            _mockAnimalUserRepository.Setup(repo => repo.GetAllAnimalUsers())
-                .ReturnsAsync(expectedAnimalUsers);
+        // Assert
+        Assert.That(result, Is.Not.Null);
+        CollectionAssert.AreEqual(expectedAnimalUsers, result);
+        _mockAnimalUserRepository.Verify(repo => repo.GetAllAnimalUsers(), Times.Once);
+    }
 
-            // Act
-            var result = await _handler.Handle(query, CancellationToken.None);
+    [Test]
+    public void Handle_ThrowsExceptionOnRepositoryError()
+    {
+        // Arrange
+        var query = new GetAllAnimalUsersQuery();
 
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(expectedAnimalUsers.Count, result.Count);
-            _mockAnimalUserRepository.Verify(repo => repo.GetAllAnimalUsers(), Times.Once);
-        }
+        _mockAnimalUserRepository.Setup(repo => repo.GetAllAnimalUsers())
+            .ThrowsAsync(new Exception("Simulated repository error"));
 
-        [Test]
-        public void Handle_ThrowsExceptionOnRepositoryError()
-        {
-            // Arrange
-            var query = new GetAllAnimalUsersQuery();
-
-            _mockAnimalUserRepository.Setup(repo => repo.GetAllAnimalUsers())
-                .ThrowsAsync(new Exception("Simulated repository error"));
-
-            // Act & Assert
-            Assert.ThrowsAsync<Exception>(() => _handler.Handle(query, CancellationToken.None));
-            _mockAnimalUserRepository.Verify(repo => repo.GetAllAnimalUsers(), Times.Once);
-        }
+        // Act & Assert
+        Assert.That(async () => await _handler.Handle(query, CancellationToken.None), Throws.Exception.TypeOf<Exception>());
+        _mockAnimalUserRepository.Verify(repo => repo.GetAllAnimalUsers(), Times.Once);
     }
 }

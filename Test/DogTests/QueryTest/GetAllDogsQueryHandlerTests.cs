@@ -5,40 +5,40 @@ using Infrastructure.Interfaces;
 using Moq;
 using NUnit.Framework;
 
-namespace Application.Tests.Queries.Dogs
+[TestFixture]
+public class GetAllDogsQueryHandlerTests
 {
-    [TestFixture]
-    public class GetAllDogsQueryHandlerTests
+    private GetAllDogsQueryHandler _handler;
+    private Mock<IAnimalRepository> _mockAnimalRepository;
+
+    [SetUp]
+    public void Setup()
     {
-        private GetAllDogsQueryHandler _handler;
-        private Mock<IAnimalRepository> _mockAnimalRepository;
+        _mockAnimalRepository = new Mock<IAnimalRepository>();
+        _handler = new GetAllDogsQueryHandler(_mockAnimalRepository.Object);
+    }
 
-        [SetUp]
-        public void Setup()
+    [Test]
+    public async Task Handle_ReturnsAllDogsFromRepository()
+    {
+        // Arrange
+        var expectedDogs = new List<Dog>
         {
-            _mockAnimalRepository = new Mock<IAnimalRepository>();
-            _handler = new GetAllDogsQueryHandler(_mockAnimalRepository.Object);
-        }
+            new Dog { Id = Guid.NewGuid(), Name = "Dog1", DogBreed = "Labrador" },
+            new Dog { Id = Guid.NewGuid(), Name = "Dog2", DogWeight = 21 }
+        };
 
-        [Test]
-        public async Task Handle_ReturnsAllDogsFromRepository()
-        {
-            // Arrange
-            var expectedDogs = new List<Dog>
-            {
-                new Dog { Id = Guid.NewGuid(), Name = "Dog1", DogBreed = "Labrador" },
-                new Dog { Id = Guid.NewGuid(), Name = "Dog2", DogWeight = 21 }
-            };
+        _mockAnimalRepository.Setup(repo => repo.GetAllDogs()).ReturnsAsync(expectedDogs);
 
-            _mockAnimalRepository.Setup(repo => repo.GetAllDogs()).ReturnsAsync(expectedDogs);
+        // Act
+        var result = await _handler.Handle(new GetAllDogsQuery(), CancellationToken.None);
 
-            // Act
-            var result = await _handler.Handle(new GetAllDogsQuery(), CancellationToken.None);
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsInstanceOf<List<Dog>>(result);
+        Assert.AreEqual(expectedDogs.Count, result.Count);
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<List<Dog>>(result);
-            Assert.AreEqual(expectedDogs.Count, result.Count);
-        }
+        // Ensure that the repository's GetAllDogs method was called
+        _mockAnimalRepository.Verify(repo => repo.GetAllDogs(), Times.Once);
     }
 }
