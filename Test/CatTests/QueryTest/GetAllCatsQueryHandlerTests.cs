@@ -1,37 +1,44 @@
-﻿//using Application.Queries.Cats;
-//using Application.Queries.Cats.GetAll;
-//using Domain.Models;
-//using Infrastructure.Database;
+﻿using Application.Queries.Cats;
+using Application.Queries.Cats.GetAll;
+using Domain.Models;
+using Infrastructure.Interfaces;
+using Moq;
+using NUnit.Framework;
 
-//namespace Test.CatTests.QueryTest
-//{
-//    [TestFixture]
-//    public class GetAllBirdsTests
-//    {
-//        private GetAllCatsQueryHandler _handler;
-//        private MockDatabase _mockDatabase;
+namespace Application.Tests.Queries.Cats
+{
+    [TestFixture]
+    public class GetAllCatsQueryHandlerTests
+    {
+        private GetAllCatsQueryHandler _handler;
+        private Mock<IAnimalRepository> _mockAnimalRepository;
 
-//        [SetUp]
-//        public void SetUp()
-//        {
-//            _mockDatabase = new MockDatabase();
-//            _handler = new GetAllCatsQueryHandler(_mockDatabase);
-//        }
+        [SetUp]
+        public void Setup()
+        {
+            _mockAnimalRepository = new Mock<IAnimalRepository>();
+            _handler = new GetAllCatsQueryHandler(_mockAnimalRepository.Object);
+        }
 
-//        [Test]
-//        public async Task Handle_GetAlLCats_ReturnsCorrect()
-//        {
-//            // Arrange
-//            var query = new GetAllCatsQuery();
+        [Test]
+        public async Task Handle_ReturnsAllCatsFromRepository()
+        {
+            // Arrange
+            var expectedCats = new List<Cat>
+            {
+                new Cat { Id = Guid.NewGuid(), Name = "Cat1", LikesToPlay = true },
+                new Cat { Id = Guid.NewGuid(), Name = "Cat2", LikesToPlay = false }
+            };
 
-//            // Act
-//            var result = await _handler.Handle(query, CancellationToken.None);
+            _mockAnimalRepository.Setup(repo => repo.GetAllCats()).ReturnsAsync(expectedCats);
 
-//            // Assert
-//            Assert.NotNull(result);
-//            Assert.IsInstanceOf<List<Cat>>(result);
-//            Assert.Greater(result.Count, 0);
-//        }
+            // Act
+            var result = await _handler.Handle(new GetAllCatsQuery(), CancellationToken.None);
 
-//    }
-//}
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<List<Cat>>(result);
+            Assert.AreEqual(expectedCats.Count, result.Count);
+        }
+    }
+}

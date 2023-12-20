@@ -8,8 +8,6 @@ public static class DependencyInjection
 
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(assembly));
 
-        //services.AddValidatorsFromAssembly(assembly);
-
         return services;
 
     }

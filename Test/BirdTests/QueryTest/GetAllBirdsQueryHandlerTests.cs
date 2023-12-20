@@ -1,38 +1,44 @@
-﻿//using Application.Queries.Birds;
-//using Application.Queries.Birds.GetAll;
-//using Domain.Models;
-//using Infrastructure.Database;
+﻿using Application.Queries.Birds;
+using Application.Queries.Birds.GetAll;
+using Domain.Models;
+using Infrastructure.Interfaces;
+using Moq;
+using NUnit.Framework;
 
-//namespace Test.BirdTests.QueryTest
-//{
-//    [TestFixture]
-//    public class GetAllBirdsTests
-//    {
-//        private GetAllBirdsQueryHandler _handler;
-//        private MockDatabase _mockDatabase;
+namespace Application.Tests.Queries.Birds
+{
+    [TestFixture]
+    public class GetAllBirdsQueryHandlerTests
+    {
+        private GetAllBirdsQueryHandler _handler;
+        private Mock<IAnimalRepository> _mockAnimalRepository;
 
-//        [SetUp]
-//        public void SetUp()
-//        {
-//            // Initialize the handler and mock database before each test
-//            _mockDatabase = new MockDatabase();
-//            _handler = new GetAllBirdsQueryHandler(_mockDatabase);
-//        }
+        [SetUp]
+        public void Setup()
+        {
+            _mockAnimalRepository = new Mock<IAnimalRepository>();
+            _handler = new GetAllBirdsQueryHandler(_mockAnimalRepository.Object);
+        }
 
-//        [Test]
-//        public async Task Handle_GetAlLBirds_ReturnsCorrect()
-//        {
-//            // Arrange
-//            var query = new GetAllBirdsQuery();
+        [Test]
+        public async Task Handle_ReturnsAllBirdsFromRepository()
+        {
+            // Arrange
+            var expectedBirds = new List<Bird>
+            {
+                new Bird { Id = Guid.NewGuid(), Name = "Bird1", CanFly = true },
+                new Bird { Id = Guid.NewGuid(), Name = "Bird2", CanFly = false }
+            };
 
-//            // Act
-//            var result = await _handler.Handle(query, CancellationToken.None);
+            _mockAnimalRepository.Setup(repo => repo.GetAllBirds()).ReturnsAsync(expectedBirds);
 
-//            // Assert
-//            Assert.NotNull(result);
-//            Assert.IsInstanceOf<List<Bird>>(result);
-//            Assert.Greater(result.Count, 0);
-//        }
+            // Act
+            var result = await _handler.Handle(new GetAllBirdsQuery(), CancellationToken.None);
 
-//    }
-//}
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<List<Bird>>(result);
+            Assert.AreEqual(expectedBirds.Count, result.Count);
+        }
+    }
+}

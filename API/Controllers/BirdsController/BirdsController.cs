@@ -7,12 +7,14 @@ using Application.Queries.Birds.GetById;
 using Application.Validators;
 using FluentValidation.Results;  // Importera FluentValidation.Results
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.BirdsController
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BirdsController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -43,6 +45,7 @@ namespace API.Controllers.BirdsController
 
         [HttpGet]
         [Route("getBirdById/{birdId}")]
+        [Authorize]
         public async Task<IActionResult> GetBirdById(Guid birdId)
         {
             try

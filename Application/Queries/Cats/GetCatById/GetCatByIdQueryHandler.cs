@@ -19,7 +19,7 @@ namespace Application.Queries.Cats
             try
             {
                 // Använd GetCatById-metoden från din AnimalRepository för att hämta katten från databasen
-                Cat cat = await _animalRepository.GetCatById(request.CatId);
+                Cat cat = await _animalRepository.GetCatById(request.Id);
                 return cat;
             }
             catch (Exception ex)
@@ -29,5 +29,6 @@ namespace Application.Queries.Cats
                 throw new Exception($"An error occurred while processing GetCatByIdQuery: {ex.Message}", ex);
             }
         }
+
     }
 }
