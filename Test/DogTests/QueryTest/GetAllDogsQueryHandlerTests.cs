@@ -34,9 +34,9 @@ public class GetAllDogsQueryHandlerTests
         var result = await _handler.Handle(new GetAllDogsQuery(), CancellationToken.None);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.IsInstanceOf<List<Dog>>(result);
-        Assert.AreEqual(expectedDogs.Count, result.Count);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<List<Dog>>());
+        Assert.That(result.Count, Is.EqualTo(expectedDogs.Count));
 
         // Ensure that the repository's GetAllDogs method was called
         _mockAnimalRepository.Verify(repo => repo.GetAllDogs(), Times.Once);

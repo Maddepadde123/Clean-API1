@@ -36,7 +36,7 @@ public class GetAnimalUserByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        Assert.AreEqual(expectedAnimalUser, result);
+        Assert.That(result, Is.EqualTo(expectedAnimalUser));
         _mockAnimalUserRepository.Verify(repo => repo.GetAnimalUserById(It.IsAny<Guid>(), It.IsAny<Guid>()), Times.Once);
     }
 
