@@ -77,5 +77,6 @@ void ConfigureSwagger(IServiceCollection services)
                 Array.Empty<string>()
             }
         });
+
     });
 }

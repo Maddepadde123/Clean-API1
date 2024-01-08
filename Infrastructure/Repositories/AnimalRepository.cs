@@ -1,6 +1,7 @@
 ﻿using Domain.Data;
 using Domain.Models;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Repositories.AnimalRepository
@@ -267,7 +268,7 @@ namespace Infrastructure.Repositories.AnimalRepository
                 if (wantedCat == null)
                 {
                     _logger.LogError($"Cat with Id {catId} not found in the database");
-                    return null; // eller hantera på något annat sätt, beroende på din logik
+                    return null;
                 }
 
                 return wantedCat;
@@ -276,6 +277,76 @@ namespace Infrastructure.Repositories.AnimalRepository
             {
                 _logger.LogError($"An error occurred while getting a cat by Id {catId} from the database");
                 throw new Exception($"An error occurred while getting a cat by Id {catId} from the database", ex);
+            }
+        }
+
+        public async Task<List<Cat>> GetCatsByWeightAndBreedAsync(string? breed, int? weight)
+        {
+            try
+            {
+                var query = _animalDbContext.Cats.AsQueryable();
+
+                if (!string.IsNullOrEmpty(breed))
+                {
+                    query = query.Where(c => c.CatBreed == breed);
+                }
+
+                if (weight.HasValue)
+                {
+                    query = query.Where(c => c.CatWeight >= weight.Value);
+                }
+
+                return await query.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while getting cats by weight and breed from the database", ex);
+                throw new Exception("An error occurred while getting cats by weight and breed from the database", ex);
+            }
+        }
+
+        public async Task<List<Dog>> GetDogsByWeightAndBreedAsync(string breed = null, int? weight = null)
+        {
+            try
+            {
+                var query = _animalDbContext.Dogs.AsQueryable();
+
+                if (!string.IsNullOrEmpty(breed))
+                {
+                    query = query.Where(d => d.DogBreed == breed);
+                }
+
+                if (weight.HasValue)
+                {
+                    query = query.Where(d => d.DogWeight >= weight.Value);
+                }
+
+                return query.ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while getting dogs by weight and breed from the database");
+                throw new Exception("An error occurred while getting dogs by weight and breed from the database", ex);
+            }
+        }
+
+        public async Task<List<Bird>> GetBirdsByColorAsync(string color)
+        {
+            try
+            {
+                var query = _animalDbContext.Birds.AsQueryable();
+
+                if (!string.IsNullOrEmpty(color))
+                {
+                    query = query.Where(bird => bird.Color == color);
+                }
+
+                return await query.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while getting birds by color from the database: {ex.Message}");
+                throw;
             }
         }
 

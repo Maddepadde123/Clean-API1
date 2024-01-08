@@ -3,6 +3,7 @@ using Application.Commands.Birds.DeleteDog;
 using Application.Commands.Birds.UpdateBird;
 using Application.Dtos;
 using Application.Queries.Birds.GetAll;
+using Application.Queries.Birds.GetBirdByColor;
 using Application.Queries.Birds.GetById;
 using Application.Validators;
 using FluentValidation.Results;  // Importera FluentValidation.Results
@@ -125,5 +126,28 @@ namespace API.Controllers.BirdsController
                 return StatusCode(500, "Internal Server Error");
             }
         }
+
+        [HttpGet]
+        [Route("getBirdByColor")]
+        public async Task<IActionResult> GetBirdByColor([FromQuery] string color)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(color))
+                {
+                    return BadRequest("Color parameter is required.");
+                }
+
+                var result = await _mediator.Send(new GetBirdByColorQuery { Color = color });
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetBirdByColor: {ex.Message}");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+
     }
 }
