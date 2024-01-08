@@ -4,6 +4,7 @@ using Application.Commands.Cats.UpdateCat;
 using Application.Dtos;
 using Application.Queries.Cats.GetAll;
 using Application.Queries.Cats.GetById;
+using Application.Queries.Cats.GetCatsByWeightAndBreed;
 using Application.Validators;
 using FluentValidation.Results;
 using MediatR;
@@ -119,5 +120,21 @@ namespace API.Controllers.CatsController
                 return StatusCode(500, "Internal Server Error");
             }
         }
+
+        [HttpGet]
+        [Route("getCatsByWeightAndBreed")]
+        public async Task<IActionResult> GetCatsByWeightAndBreed([FromQuery] string breed, [FromQuery] int? weight)
+        {
+            try
+            {
+                return Ok(await _mediator.Send(new GetCatsByWeightAndBreedQuery { CatBreed = breed, CatWeight = weight }));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetCatsByWeightAndBreed: {ex.Message}");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+
     }
 }
